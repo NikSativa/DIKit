@@ -39,12 +39,12 @@ public final class Container {
     }
 
     func resolveStoryboardable<T>(_ object: Any, as type: T, name: String? = nil) {
-        let key = self.key(type, name: name)
+        let key = key(type, name: name)
         resolveStoryboardable(object, by: key)
     }
 
     func resolveStoryboardable(_ object: Any) {
-        let key = self.key(object, name: nil)
+        let key = key(object, name: nil)
         resolveStoryboardable(object, by: key)
     }
 
@@ -71,7 +71,7 @@ public final class Container {
 
 extension Container: Registrator {
     public func registration<T>(for type: T.Type, name: String?) -> Forwarding {
-        let key = self.key(type, name: name)
+        let key = key(type, name: name)
 
         guard let storage = storages[key] else {
             fatalError("can't resolve dependency of <\(type)>")
@@ -82,7 +82,7 @@ extension Container: Registrator {
 
     public func registerStoryboardable<T>(_ type: T.Type,
                                           _ entity: @escaping (T, Resolver) -> Void) {
-        let key = self.key(type, name: nil)
+        let key = key(type, name: nil)
 
         if strongRefCycle {
             assert(storyboards[key].isNil, "\(type) is already registered with \(key)")
@@ -99,12 +99,12 @@ extension Container: Registrator {
     public func register<T>(_ type: T.Type,
                             options: Options = .default,
                             _ entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
-        let key = self.key(type, name: options.name)
+        let key = key(type, name: options.name)
 
         if let found = storages[key] {
             switch (found.accessLevel, options.accessLevel) {
             case (.final, .final):
-                assert(false, "\(type) is already registered with \(key)")
+                assertionFailure("\(type) is already registered with \(key)")
             case (.final, .open):
                 // ignore `open` due to final realisation
                 return Forwarder(container: self, storage: found)
@@ -131,12 +131,12 @@ extension Container: Registrator {
 
 extension Container: ForwardRegistrator {
     func register<T>(_ type: T.Type, named: String, storage: Storage) {
-        let key = self.key(type, name: named)
+        let key = key(type, name: named)
 
         if let found = storages[key] {
             switch found.accessLevel {
             case .final:
-                assert(false, "\(type) is already registered with \(key)")
+                assertionFailure("\(type) is already registered with \(key)")
             case .open:
                 break
             }
@@ -146,12 +146,12 @@ extension Container: ForwardRegistrator {
     }
 
     func register<T>(_ type: T.Type, storage: Storage) {
-        let key = self.key(type, name: nil)
+        let key = key(type, name: nil)
 
         if let found = storages[key] {
             switch found.accessLevel {
             case .final:
-                assert(false, "\(type) is already registered with \(key)")
+                assertionFailure("\(type) is already registered with \(key)")
             case .open:
                 break
             }
@@ -163,13 +163,13 @@ extension Container: ForwardRegistrator {
 
 extension Container: Resolver {
     public func optionalResolve<T>(_ type: T.Type, with arguments: Arguments) -> T? {
-        let key = self.key(type, name: nil)
+        let key = key(type, name: nil)
         let storage = storages[key]
         return storage?.resolve(with: self, arguments: arguments) as? T
     }
 
     public func optionalResolve<T>(_ type: T.Type, named: String, with arguments: Arguments) -> T? {
-        let key = self.key(type, name: named)
+        let key = key(type, name: named)
         let storage = storages[key]
         return storage?.resolve(with: self, arguments: arguments) as? T
     }
