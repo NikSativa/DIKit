@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = "NInjectTestHelpers"
-  spec.version      = "1.7.1"
+  spec.version      = "1.7.3"
   spec.summary      = "DI extension"
 
   spec.source       = { :git => "git@github.com:NikSativa/NInject.git" }

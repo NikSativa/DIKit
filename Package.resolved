@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/mattgallagher/CwlPreconditionTesting.git",
         "state": {
           "branch": null,
-          "revision": "fb7a26374e8570ff5c68142e5c83406d6abae0d8",
-          "version": "2.0.2"
+          "revision": "c21f7bab5ca8eee0a9998bbd17ca1d0eb45d4688",
+          "version": "2.1.0"
         }
       },
       {
@@ -30,11 +30,11 @@
       },
       {
         "package": "NSpry",
-        "repositoryURL": "git@github.com:NikSativa/NSpry.git",
+        "repositoryURL": "https://github.com/NikSativa/NSpry.git",
         "state": {
           "branch": null,
-          "revision": "31f1a1d4231c2233ff85f73bfd160b9d390f7ccd",
-          "version": "1.2.6"
+          "revision": "85aff16ab963fc72f6972cd82d36677973792155",
+          "version": "1.2.7"
         }
       },
       {
