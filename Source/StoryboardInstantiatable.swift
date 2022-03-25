@@ -2,7 +2,7 @@ import Foundation
 import ObjectiveC
 
 public protocol StoryboardSelfInjectable {
-    func didInstantiateFromStoryboard() -> Bool
+    func resolveDependncies(with resolver: Resolver)
 }
 
 extension NSObject {
@@ -53,6 +53,7 @@ extension NSObject {
         resolveDependencies()
     }
 
+    @available(*, deprecated, message: "Will be removed soon")
     public func resolveDependencies<T>(as type: T, name: String? = nil) {
         if isInitializationNeeded() {
             NSObject.container?.resolveStoryboardable(self, as: type, name: name)
@@ -60,21 +61,20 @@ extension NSObject {
     }
 
     private func isInitializationNeeded() -> Bool {
-        if isInitializedFromDI {
-            return false
+        defer {
+            isInitializedFromDI = true
         }
-        isInitializedFromDI = true
-
-        if let storyboardable = self as? StoryboardSelfInjectable, storyboardable.didInstantiateFromStoryboard() {
-            return false
-        }
-
-        return true
+        return !isInitializedFromDI
     }
 
     private func resolveDependencies() {
-        if isInitializationNeeded() {
-            NSObject.container?.resolveStoryboardable(self)
+        if isInitializationNeeded(),
+           let container = NSObject.container {
+            if let storyboardable = self as? StoryboardSelfInjectable {
+                storyboardable.resolveDependncies(with: container)
+            } else {
+                container.resolveStoryboardable(self)
+            }
         }
     }
 }

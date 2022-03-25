@@ -38,6 +38,7 @@ public final class Container {
         self.init(assemblies: assemblies, storyboardable: storyboardable)
     }
 
+    @available(*, deprecated, message: "Will be removed soon")
     func resolveStoryboardable<T>(_ object: Any, as type: T, name: String? = nil) {
         let key = key(type, name: name)
         resolveStoryboardable(object, by: key)
