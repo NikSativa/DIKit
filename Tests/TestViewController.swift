@@ -2,6 +2,5 @@
 import Foundation
 import UIKit
 
-final class TestViewController: UIViewController {
-}
+final class TestViewController: UIViewController {}
 #endif

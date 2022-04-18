@@ -11,8 +11,6 @@ extension Options: SpryEquatable {
     }
 }
 
-extension Options.EntityKind: SpryEquatable {
-}
+extension Options.EntityKind: SpryEquatable {}
 
-extension Options.AccessLevel: SpryEquatable {
-}
+extension Options.AccessLevel: SpryEquatable {}

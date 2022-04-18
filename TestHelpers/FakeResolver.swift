@@ -30,8 +30,7 @@ final class FakeResolver: Resolver, Spryable {
         case optionalResolveWithNameAndArguments = "optionalResolve(named:with:)"
     }
 
-    init() {
-    }
+    init() {}
 
     func resolve<T>(_ type: T.Type) -> T {
         return spryify(arguments: type)

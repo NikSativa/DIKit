@@ -15,8 +15,7 @@ final class FakeViewControllerFactory: ViewControllerFactory, Spryable {
         case createNavigationController = "createNavigationController(from:bundle:)"
     }
 
-    init() {
-    }
+    init() {}
 
     func instantiate<T>(from nibName: String?, bundle: Bundle) -> T where T: UIViewController {
         return spryify(arguments: T.self, nibName, bundle)

@@ -23,8 +23,7 @@ final class FakeRegistrator: Registrator, Spryable {
         #endif
     }
 
-    init() {
-    }
+    init() {}
 
     @discardableResult
     func register<T>(_ type: T.Type, options: Options, _ entity: @escaping (Resolver, Arguments) -> T) -> Forwarding {

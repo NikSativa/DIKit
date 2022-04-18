@@ -15,8 +15,7 @@ final class FakeForwarding: Forwarding, Spryable {
         case implementsNamedAccessLevel = "implements(_:named:accessLevel:)"
     }
 
-    init() {
-    }
+    init() {}
 
     func implements<T>(_ type: T.Type) -> Self {
         return spryify(arguments: type)
