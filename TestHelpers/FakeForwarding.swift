@@ -25,11 +25,11 @@ final class FakeForwarding: Forwarding, Spryable {
         return spryify(arguments: type, named)
     }
 
-    func implements<T>(_ type: T.Type, accessLevel: Options.AccessLevel) -> Self {
+    func implements<T>(_ type: T.Type, accessLevel: Options.AccessLevel?) -> Self {
         return spryify(arguments: type, accessLevel)
     }
 
-    func implements<T>(_ type: T.Type, named: String, accessLevel: Options.AccessLevel) -> Self {
+    func implements<T>(_ type: T.Type, named: String?, accessLevel: Options.AccessLevel?) -> Self {
         return spryify(arguments: type, named, accessLevel)
     }
 }

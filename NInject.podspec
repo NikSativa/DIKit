@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name         = "NInject"
-    spec.version      = "1.7.3"
+    spec.version      = "1.9.0"
     spec.summary      = "NInject is Dependency Injection framework"
 
     spec.source       = { :git => "git@github.com:NikSativa/NInject.git" }

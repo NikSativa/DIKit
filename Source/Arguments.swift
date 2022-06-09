@@ -11,6 +11,10 @@ public struct Arguments {
         self.elements = elements
     }
 
+    public init() {
+        self.elements = []
+    }
+
     public func optionalResolve<T>(_: T.Type, at index: Int) -> T? {
         return elements.indices.contains(index) ? elements[index] as? T : nil
     }

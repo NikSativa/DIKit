@@ -2,21 +2,18 @@ import Foundation
 
 public protocol Forwarding {
     @discardableResult
-    func implements<T>(_ type: T.Type, accessLevel: Options.AccessLevel) -> Self
+    func implements<T>(_ type: T.Type, named: String?, accessLevel: Options.AccessLevel?) -> Self
+}
 
+public extension Forwarding {
     @discardableResult
-    func implements<T>(_ type: T.Type, named: String, accessLevel: Options.AccessLevel) -> Self
-
-    @discardableResult
-    func implements<T>(_ type: T.Type) -> Self
-
-    @discardableResult
-    func implements<T>(_ type: T.Type, named: String) -> Self
+    func implements<T>(_ type: T.Type = T.self, named: String? = nil, accessLevel: Options.AccessLevel? = nil) -> Self {
+        return implements(type, named: named, accessLevel: accessLevel)
+    }
 }
 
 protocol ForwardRegistrator: AnyObject {
-    func register<T>(_ type: T.Type, storage: Storage)
-    func register<T>(_ type: T.Type, named: String, storage: Storage)
+    func register<T>(_ type: T.Type, named: String?, storage: Storage)
 }
 
 struct Forwarder: Forwarding {
@@ -30,26 +27,8 @@ struct Forwarder: Forwarding {
     }
 
     @discardableResult
-    func implements<T>(_ type: T.Type, accessLevel: Options.AccessLevel) -> Self {
-        container.register(type, storage: ForwardingStorage(storage: storage, accessLevel: accessLevel))
-        return self
-    }
-
-    @discardableResult
-    func implements<T>(_ type: T.Type, named: String, accessLevel: Options.AccessLevel) -> Self {
+    func implements<T>(_ type: T.Type, named: String?, accessLevel: Options.AccessLevel?) -> Self {
         container.register(type, named: named, storage: ForwardingStorage(storage: storage, accessLevel: accessLevel))
-        return self
-    }
-
-    @discardableResult
-    func implements<T>(_ type: T.Type) -> Forwarder {
-        container.register(type, storage: ForwardingStorage(storage: storage))
-        return self
-    }
-
-    @discardableResult
-    func implements<T>(_ type: T.Type, named: String) -> Forwarder {
-        container.register(type, named: named, storage: ForwardingStorage(storage: storage))
         return self
     }
 }

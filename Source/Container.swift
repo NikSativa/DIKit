@@ -131,7 +131,7 @@ extension Container: Registrator {
 }
 
 extension Container: ForwardRegistrator {
-    func register<T>(_ type: T.Type, named: String, storage: Storage) {
+    func register<T>(_ type: T.Type, named: String?, storage: Storage) {
         let key = key(type, name: named)
 
         if let found = storages[key] {
@@ -163,16 +163,13 @@ extension Container: ForwardRegistrator {
 }
 
 extension Container: Resolver {
-    public func optionalResolve<T>(_ type: T.Type, with arguments: Arguments) -> T? {
-        let key = key(type, name: nil)
-        let storage = storages[key]
-        return storage?.resolve(with: self, arguments: arguments) as? T
-    }
-
-    public func optionalResolve<T>(_ type: T.Type, named: String, with arguments: Arguments) -> T? {
+    public func optionalResolve<T>(_ type: T.Type, named: String?, with arguments: Arguments) -> T? {
         let key = key(type, name: named)
-        let storage = storages[key]
-        return storage?.resolve(with: self, arguments: arguments) as? T
+        if let storage = storages[key],
+           let resolved = storage.resolve(with: self, arguments: arguments) as? T {
+            return resolved
+        }
+        return nil
     }
 }
 
