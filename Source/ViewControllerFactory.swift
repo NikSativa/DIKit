@@ -31,7 +31,7 @@ extension Impl.ViewControllerFactory: ViewControllerFactory {
         let storyboard = UIStoryboard(name: klass, bundle: bundle)
 
         let controller: T = instantiateInitialViewController(from: storyboard)
-        controller.resolveDependenciesManually()
+        controller.resolveDependencies()
         return controller
     }
 

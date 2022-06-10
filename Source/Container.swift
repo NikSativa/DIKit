@@ -29,8 +29,8 @@ public final class Container {
     }
 
     deinit {
-        if NSObject.container === self {
-            NSObject.container = nil
+        if ContainerHolder.container === self {
+            ContainerHolder.container = nil
         }
     }
 
@@ -176,10 +176,10 @@ extension Container: Resolver {
 extension Container /* Storyboardable */ {
     private func makeStoryboardable() {
         if strongRefCycle {
-            assert(NSObject.container.isNil, "storyboard handler was registered twice")
+            assert(ContainerHolder.container.isNil, "storyboard handler was registered twice")
         }
 
-        NSObject.container = self
+        ContainerHolder.container = self
     }
 }
 

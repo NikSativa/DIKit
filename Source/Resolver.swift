@@ -12,8 +12,12 @@ public extension Resolver {
         fatalError("can't resolve dependency of <\(type)>")
     }
 
-    func optionalResolve<T>(_ type: T.Type = T.self, named: String? = nil, with arguments: Arguments = .init()) -> T? {
-        return optionalResolve(type, named: named, with: arguments)
+    func optionalResolve<T>(_ type: T.Type = T.self, with arguments: Arguments) -> T? {
+        return optionalResolve(type, named: nil, with: arguments)
+    }
+
+    func optionalResolve<T>(_ type: T.Type = T.self, named: String? = nil) -> T? {
+        return optionalResolve(type, named: named, with: .init())
     }
 
     func resolveWrapped<W: InstanceWrapper, T>(_ type: T.Type = T.self, named: String? = nil, with arguments: Arguments = .init()) -> W

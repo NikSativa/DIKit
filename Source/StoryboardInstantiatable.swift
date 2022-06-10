@@ -5,10 +5,35 @@ public protocol StoryboardSelfInjectable {
     func resolveDependncies(with resolver: Resolver)
 }
 
-extension NSObject {
+public protocol SelfInjectable {
+    func isDependenciesInitializationNeeded() -> Bool
+    func resolveDependencies()
+}
+
+public extension SelfInjectable {
+    func resolveDependencies() {
+        if isDependenciesInitializationNeeded(),
+           let container = ContainerHolder.container {
+            if let storyboardable = self as? StoryboardSelfInjectable {
+                storyboardable.resolveDependncies(with: container)
+            } else {
+                container.resolveStoryboardable(self)
+            }
+        }
+    }
+}
+
+enum ContainerHolder {
+    static var container: Container? {
+        didSet {
+            assert(oldValue == nil)
+        }
+    }
+}
+
+extension NSObject: SelfInjectable {
     private enum AssociatedKeys {
         static var initialization = "NInject.isInitializedFromDI"
-        static var container = "NInject.container"
         static var dipTag = "NInject.dipTag"
     }
 
@@ -18,24 +43,6 @@ extension NSObject {
         }
         set {
             objc_setAssociatedObject(self, &AssociatedKeys.initialization, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        }
-    }
-
-    @objc private static var containerHolder: ContainerPropertyHolder? {
-        get {
-            return objc_getAssociatedObject(self, &AssociatedKeys.container) as? ContainerPropertyHolder
-        }
-        set {
-            objc_setAssociatedObject(self, &AssociatedKeys.container, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        }
-    }
-
-    internal static var container: Container? {
-        get {
-            return containerHolder?.value
-        }
-        set {
-            containerHolder = newValue.map { ContainerPropertyHolder(value: $0) }
         }
     }
 
@@ -49,41 +56,10 @@ extension NSObject {
         }
     }
 
-    public func resolveDependenciesManually() {
-        resolveDependencies()
-    }
-
-    @available(*, deprecated, message: "Will be removed soon")
-    public func resolveDependencies<T>(as type: T, name: String? = nil) {
-        if isInitializationNeeded() {
-            NSObject.container?.resolveStoryboardable(self, as: type, name: name)
-        }
-    }
-
-    private func isInitializationNeeded() -> Bool {
+    public func isDependenciesInitializationNeeded() -> Bool {
         defer {
             isInitializedFromDI = true
         }
         return !isInitializedFromDI
-    }
-
-    private func resolveDependencies() {
-        if isInitializationNeeded(),
-           let container = NSObject.container {
-            if let storyboardable = self as? StoryboardSelfInjectable {
-                storyboardable.resolveDependncies(with: container)
-            } else {
-                container.resolveStoryboardable(self)
-            }
-        }
-    }
-}
-
-private final class ContainerPropertyHolder: NSObject {
-    weak var value: Container?
-
-    required init(value: Container) {
-        self.value = value
-        super.init()
     }
 }
