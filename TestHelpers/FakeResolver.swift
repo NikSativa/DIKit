@@ -81,7 +81,7 @@ final class FakeResolver: Resolver, Spryable {
         return spryify()
     }
 
-    func optionalResolve<T>(_ type: T.Type, named: String, with arguments: Arguments) -> T? {
+    func optionalResolve<T>(_ type: T.Type, named: String?, with arguments: Arguments) -> T? {
         return spryify(arguments: type, named, arguments)
     }
 
