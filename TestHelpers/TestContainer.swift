@@ -25,11 +25,15 @@ private final class TestRegistrator {
     private(set) var registered: [RegistrationInfo] = []
 }
 
+// MARK: - ForwardRegistrator
+
 extension TestRegistrator: ForwardRegistrator {
     func register<T>(_ type: T.Type, named: String?, storage: Storage) {
         registered.append(.forwardingName(to: type, name: named, accessLevel: storage.accessLevel))
     }
 }
+
+// MARK: - Registrator
 
 extension TestRegistrator: Registrator {
     @discardableResult

@@ -70,6 +70,8 @@ public final class Container {
     }
 }
 
+// MARK: - Registrator
+
 extension Container: Registrator {
     public func registration<T>(for type: T.Type, name: String?) -> Forwarding {
         let key = key(type, name: name)
@@ -130,6 +132,8 @@ extension Container: Registrator {
     }
 }
 
+// MARK: - ForwardRegistrator
+
 extension Container: ForwardRegistrator {
     func register<T>(_ type: T.Type, named: String?, storage: Storage) {
         let key = key(type, name: named)
@@ -161,6 +165,8 @@ extension Container: ForwardRegistrator {
         storages[key] = storage
     }
 }
+
+// MARK: - Resolver
 
 extension Container: Resolver {
     public func optionalResolve<T>(_ type: T.Type, named: String?, with arguments: Arguments) -> T? {

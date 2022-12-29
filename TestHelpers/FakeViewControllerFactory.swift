@@ -1,9 +1,8 @@
 #if os(iOS)
 import Foundation
+import NInject
 import NSpry
 import UIKit
-
-import NInject
 
 final class FakeViewControllerFactory: ViewControllerFactory, Spryable {
     enum ClassFunction: String, StringRepresentable {

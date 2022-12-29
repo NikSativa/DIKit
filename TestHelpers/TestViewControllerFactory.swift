@@ -2,7 +2,6 @@
 import Foundation
 import NSpry
 import UIKit
-
 @testable import NInject
 
 public enum NTestViewControllerFactory {

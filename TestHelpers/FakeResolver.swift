@@ -1,7 +1,6 @@
 import Foundation
-import NSpry
-
 import NInject
+import NSpry
 
 final class FakeResolver: Resolver, Spryable {
     enum ClassFunction: String, StringRepresentable {
@@ -64,7 +63,7 @@ final class FakeResolver: Resolver, Spryable {
         return spryify(arguments: type, named, arguments)
     }
 
-    // optional
+    /// optional
     func optionalResolve<T>(_ type: T.Type, with arguments: Arguments) -> T? {
         return spryify(arguments: type, arguments)
     }

@@ -31,13 +31,16 @@ enum ContainerHolder {
     }
 }
 
+// MARK: - NSObject + SelfInjectable
+
 extension NSObject: SelfInjectable {
     private enum AssociatedKeys {
         static var initialization = "NInject.isInitializedFromDI"
         static var dipTag = "NInject.dipTag"
     }
 
-    @objc internal var isInitializedFromDI: Bool {
+    @objc
+    internal var isInitializedFromDI: Bool {
         get {
             return (objc_getAssociatedObject(self, &AssociatedKeys.initialization) as? Bool) ?? false
         }
@@ -46,7 +49,8 @@ extension NSObject: SelfInjectable {
         }
     }
 
-    @objc internal private(set) var dipTag: String? {
+    @objc
+    internal private(set) var dipTag: String? {
         get {
             return objc_getAssociatedObject(self, &AssociatedKeys.dipTag) as? String
         }

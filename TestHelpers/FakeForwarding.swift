@@ -1,7 +1,6 @@
 import Foundation
-import NSpry
-
 import NInject
+import NSpry
 
 final class FakeForwarding: Forwarding, Spryable {
     enum ClassFunction: String, StringRepresentable {

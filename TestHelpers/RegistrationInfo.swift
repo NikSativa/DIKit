@@ -1,7 +1,5 @@
 import Foundation
-import NInject
 import NSpry
-
 @testable import NInject
 
 enum RegistrationInfo: Equatable, SpryEquatable {

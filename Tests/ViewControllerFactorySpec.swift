@@ -4,7 +4,6 @@ import Nimble
 import NSpry
 import Quick
 import UIKit
-
 @testable import NInject
 @testable import NInjectTestHelpers
 
