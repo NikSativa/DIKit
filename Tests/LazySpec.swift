@@ -3,6 +3,7 @@ import Nimble
 import NSpry
 import NSpry_Nimble
 import Quick
+
 @testable import NInject
 @testable import NInjectTestHelpers
 
@@ -17,7 +18,7 @@ final class LazySpec: QuickSpec {
 
             beforeEach {
                 resolvingCounter = 0
-                container = .init(assemblies: [])
+                container = .init(assemblies: [], shared: false)
             }
 
             context("when registered weak") {

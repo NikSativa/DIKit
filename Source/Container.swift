@@ -8,7 +8,7 @@ public final class Container {
     private let strongRefCycle: Bool
 
     public init(assemblies: [Assembly],
-                storyboardable: Bool = false,
+                shared: Bool = true,
                 strongRefCycle: Bool = false) {
         self.strongRefCycle = strongRefCycle
 
@@ -17,8 +17,8 @@ public final class Container {
             assembly.assemble(with: self)
         }
 
-        if storyboardable {
-            makeStoryboardable()
+        if shared {
+            makeShared()
         }
 
         #if os(iOS)
@@ -29,13 +29,13 @@ public final class Container {
     }
 
     deinit {
-        if ContainerHolder.container === self {
-            ContainerHolder.container = nil
+        if InjectSettings.container === self {
+            InjectSettings.container = nil
         }
     }
 
-    public convenience init(assemblies: Assembly..., storyboardable: Bool = false) {
-        self.init(assemblies: assemblies, storyboardable: storyboardable)
+    public convenience init(assemblies: Assembly..., shared: Bool = false) {
+        self.init(assemblies: assemblies, shared: shared)
     }
 
     @available(*, deprecated, message: "Will be removed soon")
@@ -180,12 +180,12 @@ extension Container: Resolver {
 }
 
 extension Container /* Storyboardable */ {
-    private func makeStoryboardable() {
+    private func makeShared() {
         if strongRefCycle {
-            assert(ContainerHolder.container.isNil, "storyboard handler was registered twice")
+            assert(InjectSettings.container.isNil, "storyboard handler was registered twice")
         }
 
-        ContainerHolder.container = self
+        InjectSettings.container = self
     }
 }
 

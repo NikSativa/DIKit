@@ -13,20 +13,12 @@ public protocol SelfInjectable {
 public extension SelfInjectable {
     func resolveDependencies() {
         if isDependenciesInitializationNeeded(),
-           let container = ContainerHolder.container {
+           let container = InjectSettings.container {
             if let storyboardable = self as? StoryboardSelfInjectable {
                 storyboardable.resolveDependncies(with: container)
             } else {
                 container.resolveStoryboardable(self)
             }
-        }
-    }
-}
-
-enum ContainerHolder {
-    static var container: Container? {
-        didSet {
-            assert(oldValue == nil)
         }
     }
 }

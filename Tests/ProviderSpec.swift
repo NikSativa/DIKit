@@ -17,7 +17,7 @@ final class ProviderSpec: QuickSpec {
 
             beforeEach {
                 resolvingCounter = 0
-                container = .init(assemblies: [])
+                container = .init(assemblies: [], shared: false)
             }
 
             context("when registered weak") {
