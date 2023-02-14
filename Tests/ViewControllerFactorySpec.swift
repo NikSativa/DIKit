@@ -31,16 +31,16 @@ final class NViewControllerFactorySpec: QuickSpec {
             }
 
             describe("creating navigation controller") {
-                var navigationController: (UINavigationController, TestViewController)?
+                var actual: (navigation: UINavigationController, root: TestViewController)?
 
-                beforeEach {
-                    navigationController = subject.createNavigationController(bundle: .module)
+                beforeEach { @MainActor in
+                    actual = subject.createNavigationController(bundle: .module)
                 }
 
-                it("should create corresponded navigation controller") {
-                    expect(navigationController?.0).to(beAnInstanceOf(UINavigationController.self))
-                    expect(navigationController?.0.viewControllers.first).to(beAnInstanceOf(TestViewController.self))
-                    expect(navigationController?.1).to(beAnInstanceOf(TestViewController.self))
+                it("should create corresponded navigation controller") { @MainActor in
+                    expect(actual?.navigation).to(beAnInstanceOf(UINavigationController.self))
+                    expect(actual?.navigation.viewControllers.first).to(beAnInstanceOf(TestViewController.self))
+                    expect(actual?.root).to(beAnInstanceOf(TestViewController.self))
                 }
             }
         }
