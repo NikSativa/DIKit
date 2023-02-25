@@ -1,5 +1,5 @@
 // swift-tools-version:5.6
-
+// swiftformat:disable all
 import PackageDescription
 
 #if TARGET_OS_MAC
@@ -8,7 +8,6 @@ let exclude = ["Resources"]
 let exclude = ["Resources/cocoapods"]
 #endif
 
-// swiftformat:disable all
 let package = Package(
     name: "NInject",
     platforms: [.iOS(.v13), .macOS(.v10_15)],
