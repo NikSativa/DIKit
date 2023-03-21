@@ -13,7 +13,7 @@ final class ContainerStorage: Storage {
     }
 
     func resolve(with resolver: Resolver, arguments: Arguments) -> Entity {
-        if let entity = entity {
+        if let entity {
             return entity
         }
 

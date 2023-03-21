@@ -28,7 +28,7 @@ private final class TestRegistrator {
 // MARK: - ForwardRegistrator
 
 extension TestRegistrator: ForwardRegistrator {
-    func register<T>(_ type: T.Type, named: String?, storage: Storage) {
+    func register(_ type: (some Any).Type, named: String?, storage: Storage) {
         registered.append(.forwardingName(to: type, name: named, accessLevel: storage.accessLevel))
     }
 }

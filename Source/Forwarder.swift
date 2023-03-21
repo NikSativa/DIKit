@@ -27,7 +27,7 @@ struct Forwarder: Forwarding {
     }
 
     @discardableResult
-    func implements<T>(_ type: T.Type, named: String?, accessLevel: Options.AccessLevel?) -> Self {
+    func implements(_ type: (some Any).Type, named: String?, accessLevel: Options.AccessLevel?) -> Self {
         container.register(type, named: named, storage: ForwardingStorage(storage: storage, accessLevel: accessLevel))
         return self
     }

@@ -39,7 +39,7 @@ public final class Container {
     }
 
     @available(*, deprecated, message: "Will be removed soon")
-    func resolveStoryboardable<T>(_ object: Any, as type: T, name: String? = nil) {
+    func resolveStoryboardable(_ object: Any, as type: some Any, name: String? = nil) {
         let key = key(type, name: name)
         resolveStoryboardable(object, by: key)
     }
@@ -59,7 +59,7 @@ public final class Container {
         storyboard?(object, self)
     }
 
-    private func key<T>(_ type: T, name: String?) -> String {
+    private func key(_ type: some Any, name: String?) -> String {
         let key = String(reflecting: type).normalized
         return name.map { key + "_" + $0 } ?? key
     }
@@ -73,7 +73,7 @@ public final class Container {
 // MARK: - Registrator
 
 extension Container: Registrator {
-    public func registration<T>(for type: T.Type, name: String?) -> Forwarding {
+    public func registration(for type: (some Any).Type, name: String?) -> Forwarding {
         let key = key(type, name: name)
 
         guard let storage = storages[key] else {
@@ -135,7 +135,7 @@ extension Container: Registrator {
 // MARK: - ForwardRegistrator
 
 extension Container: ForwardRegistrator {
-    func register<T>(_ type: T.Type, named: String?, storage: Storage) {
+    func register(_ type: (some Any).Type, named: String?, storage: Storage) {
         let key = key(type, name: named)
 
         if let found = storages[key] {
@@ -150,7 +150,7 @@ extension Container: ForwardRegistrator {
         storages[key] = storage
     }
 
-    func register<T>(_ type: T.Type, storage: Storage) {
+    func register(_ type: (some Any).Type, storage: Storage) {
         let key = key(type, name: nil)
 
         if let found = storages[key] {
@@ -213,7 +213,7 @@ private extension Optional {
     }
 }
 
-private extension Array where Element == Assembly {
+private extension [Assembly] {
     func unified() -> [Element] {
         var keys: Set<String> = []
         let unified = filter {

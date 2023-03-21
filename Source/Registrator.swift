@@ -27,7 +27,7 @@ public protocol Registrator {
 }
 
 public extension Registrator {
-    func registration<T>(for type: T.Type, name: String? = nil) -> Forwarding {
+    func registration(for type: (some Any).Type, name: String? = nil) -> Forwarding {
         return registration(for: type, name: name)
     }
 
@@ -37,11 +37,11 @@ public extension Registrator {
     }
     #endif
 
-    func registerViewController<T>(_ type: T.Type) {
+    func registerViewController(_ type: (some Any).Type) {
         registerStoryboardable(type) { _, _ in }
     }
 
-    func registerStoryboardable<T>(_ type: T.Type) {
+    func registerStoryboardable(_ type: (some Any).Type) {
         registerStoryboardable(type) { _, _ in }
     }
 }
@@ -78,12 +78,12 @@ public extension Registrator {
     }
 
     @discardableResult
-    func register<T>(options: Options, _ entity: @escaping (_ arguments: Arguments) -> T) -> Forwarding {
+    func register(options: Options, _ entity: @escaping (_ arguments: Arguments) -> some Any) -> Forwarding {
         register(options: options) { _, args in entity(args) }
     }
 
     @discardableResult
-    func register<T>(_ entity: @escaping (_ arguments: Arguments) -> T) -> Forwarding {
+    func register(_ entity: @escaping (_ arguments: Arguments) -> some Any) -> Forwarding {
         register(options: .default) { _, args in entity(args) }
     }
 
@@ -112,12 +112,12 @@ public extension Registrator {
     // MARK: -
 
     @discardableResult
-    func register<T>(options: Options, _ entity: @escaping () -> T) -> Forwarding {
+    func register(options: Options, _ entity: @escaping () -> some Any) -> Forwarding {
         register(options: options) { _, _ in entity() }
     }
 
     @discardableResult
-    func register<T>(_ entity: @escaping () -> T) -> Forwarding {
+    func register(_ entity: @escaping () -> some Any) -> Forwarding {
         register(options: .default) { _, _ in entity() }
     }
 
