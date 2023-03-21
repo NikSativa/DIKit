@@ -5,12 +5,12 @@ public final class Container {
 
     private var storages: [String: Storage] = [:]
     private var storyboards: [String: Storyboardable] = [:]
-    private let strongRefCycle: Bool
+    private let isStoryboardable: Bool
 
     public init(assemblies: [Assembly],
                 shared: Bool = true,
-                strongRefCycle: Bool = false) {
-        self.strongRefCycle = strongRefCycle
+                isStoryboardable: Bool = false) {
+        self.isStoryboardable = isStoryboardable
 
         let allAssemblies = assemblies.flatMap(\.allDependencies).unified()
         for assembly in allAssemblies {
@@ -50,12 +50,12 @@ public final class Container {
     }
 
     func resolveStoryboardable(_ object: Any, by key: String) {
-        let storyboard = storyboards[key]
-
-        if strongRefCycle {
-            assert(!storyboard.isNil, "\(key) is not registered")
+        guard isStoryboardable else {
+            return
         }
 
+        let storyboard = storyboards[key]
+        assert(!storyboard.isNil, "\(key) is not registered")
         storyboard?(object, self)
     }
 
@@ -87,7 +87,7 @@ extension Container: Registrator {
                                           _ entity: @escaping (T, Resolver) -> Void) {
         let key = key(type, name: nil)
 
-        if strongRefCycle {
+        if isStoryboardable {
             assert(storyboards[key].isNil, "\(type) is already registered with \(key)")
         }
 
@@ -181,7 +181,7 @@ extension Container: Resolver {
 
 extension Container /* Storyboardable */ {
     private func makeShared() {
-        if strongRefCycle {
+        if isStoryboardable {
             assert(InjectSettings.container.isNil, "storyboard handler was registered twice")
         }
 
