@@ -1,133 +1,111 @@
 import Foundation
 
-#if os(iOS)
-import UIKit
-#endif
-
 public protocol Registrator {
+    // MARK: - AnyObject
+
+    /// register classes
     @discardableResult
     func register<T>(_ type: T.Type,
                      options: Options,
-                     _ entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding
+                     entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding
+        where T: AnyObject
 
     func registration<T>(for type: T.Type,
                          name: String?) -> Forwarding
+        where T: AnyObject
 
-    #if os(iOS)
+    // MARK: - Any
+
+    /// register structs/valueType
     @discardableResult
-    func registerViewController<T: UIViewController>(_ type: T.Type,
-                                                     options: Options,
-                                                     _ entity: @escaping (Resolver, ViewControllerFactory) -> T) -> Forwarding
-    func registerViewController<T: UIViewController>(_ type: T.Type,
-                                                     _ entity: @escaping (T, Resolver) -> Void)
-    #endif
+    func registerAny<T>(_ type: T.Type,
+                        name: String?,
+                        accessLevel: Options.AccessLevel,
+                        entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding
 
-    func registerStoryboardable<T>(_ type: T.Type,
-                                   _ entity: @escaping (T, Resolver) -> Void)
+    func registrationOfAny<T>(for type: T.Type,
+                              name: String?) -> Forwarding
 }
 
 public extension Registrator {
-    func registration(for type: (some Any).Type, name: String? = nil) -> Forwarding {
-        return registration(for: type, name: name)
-    }
+    // MARK: - AnyObject
 
-    #if os(iOS)
-    func registerViewController<T: UIViewController>(_ type: T.Type, _ entity: @escaping (T, Resolver) -> Void) {
-        registerStoryboardable(type, entity)
-    }
-    #endif
-
-    func registerViewController(_ type: (some Any).Type) {
-        registerStoryboardable(type) { _, _ in }
-    }
-
-    func registerStoryboardable(_ type: (some Any).Type) {
-        registerStoryboardable(type) { _, _ in }
-    }
-}
-
-public extension Registrator {
-    #if os(iOS)
     @discardableResult
-    func registerViewController<T: UIViewController>(_ type: T.Type,
-                                                     options: Options = .transient,
-                                                     _ entity: @escaping (Resolver, ViewControllerFactory) -> T) -> Forwarding {
-        return register(type, options: options) { resolver, _ in
-            let factory = resolver.resolve(ViewControllerFactory.self)
-            let vc = entity(resolver, factory)
-            return vc
+    func register<T>(_ type: T.Type,
+                     options: Options = .default,
+                     entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding
+    where T: AnyObject {
+        return register(type,
+                        options: options,
+                        entity: entity)
+    }
+
+    @discardableResult
+    func register<T>(_ type: T.Type,
+                     options: Options = .default,
+                     entity: @escaping (Resolver) -> T) -> Forwarding
+    where T: AnyObject {
+        return register(type,
+                        options: options) { r, _ in
+            return entity(r)
         }
     }
-    #endif
-
-    // MARK: resolver & arguments
 
     @discardableResult
-    func register<T>(options: Options, _ entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
-        register(T.self, options: options, entity)
+    func register<T>(_ type: T.Type,
+                     options: Options = .default,
+                     entity: @escaping () -> T) -> Forwarding
+    where T: AnyObject {
+        return register(type,
+                        options: options) { _, _ in
+            return entity()
+        }
+    }
+
+    func registration(for type: (some AnyObject).Type, name: String? = nil) -> Forwarding {
+        return registration(for: type,
+                            name: name)
+    }
+
+    // MARK: - Any
+
+    @discardableResult
+    func registerAny<T>(_ type: T.Type,
+                        name: String? = nil,
+                        accessLevel: Options.AccessLevel = .default,
+                        entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+        return registerAny(type,
+                           name: name,
+                           accessLevel: accessLevel,
+                           entity: entity)
     }
 
     @discardableResult
-    func register<T>(_ entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
-        register(T.self, options: .default, entity)
+    func registerAny<T>(_ type: T.Type,
+                        name: String? = nil,
+                        accessLevel: Options.AccessLevel = .default,
+                        entity: @escaping (Resolver) -> T) -> Forwarding {
+        return registerAny(type,
+                           name: name,
+                           accessLevel: accessLevel) { r, _ in
+            return entity(r)
+        }
     }
 
     @discardableResult
-    func register<T>(_ type: T.Type, _ entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
-        register(type, options: .default, entity)
+    func registerAny<T>(_ type: T.Type,
+                        name: String? = nil,
+                        accessLevel: Options.AccessLevel = .default,
+                        entity: @escaping () -> T) -> Forwarding {
+        return registerAny(type,
+                           name: name,
+                           accessLevel: accessLevel) { _, _ in
+            return entity()
+        }
     }
 
-    @discardableResult
-    func register(options: Options, _ entity: @escaping (_ arguments: Arguments) -> some Any) -> Forwarding {
-        register(options: options) { _, args in entity(args) }
-    }
-
-    @discardableResult
-    func register(_ entity: @escaping (_ arguments: Arguments) -> some Any) -> Forwarding {
-        register(options: .default) { _, args in entity(args) }
-    }
-
-    // MARK: resolver
-
-    @discardableResult
-    func register<T>(options: Options, _ entity: @escaping (Resolver) -> T) -> Forwarding {
-        register(T.self, options: options) { r, _ in entity(r) }
-    }
-
-    @discardableResult
-    func register<T>(_ entity: @escaping (Resolver) -> T) -> Forwarding {
-        register(T.self, options: .default) { r, _ in entity(r) }
-    }
-
-    @discardableResult
-    func register<T>(_ type: T.Type, _ entity: @escaping (Resolver) -> T) -> Forwarding {
-        register(type, options: .default) { r, _ in entity(r) }
-    }
-
-    @discardableResult
-    func register<T>(_ type: T.Type, options: Options, _ entity: @escaping (Resolver) -> T) -> Forwarding {
-        register(type, options: options) { r, _ in entity(r) }
-    }
-
-    // MARK: -
-
-    @discardableResult
-    func register(options: Options, _ entity: @escaping () -> some Any) -> Forwarding {
-        register(options: options) { _, _ in entity() }
-    }
-
-    @discardableResult
-    func register(_ entity: @escaping () -> some Any) -> Forwarding {
-        register(options: .default) { _, _ in entity() }
-    }
-
-    @discardableResult
-    func register<T>(_: T.Type, options: Options, _ entity: @escaping () -> T) -> Forwarding {
-        register(options: options) { _, _ in entity() }
-    }
-
-    @discardableResult
-    func register<T>(_: T.Type, _ entity: @escaping () -> T) -> Forwarding {
-        register(options: .default) { _, _ in entity() }
+    func registrationOfAny(for type: (some Any).Type, name: String? = nil) -> Forwarding {
+        return registrationOfAny(for: type,
+                                 name: name)
     }
 }

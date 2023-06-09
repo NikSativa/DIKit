@@ -1,10 +1,10 @@
 import Foundation
 
 public final class Provider<Wrapped>: InstanceWrapper {
-    private var factory: Provider.Factory?
+    private let factory: Provider.Factory
 
     public var instance: Wrapped {
-        return factory!()
+        return factory()
     }
 
     public init(with factory: @escaping () -> Wrapped) {

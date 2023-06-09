@@ -17,41 +17,35 @@ final class FakeRegistrator: Registrator, Spryable {
         case registerWithType = "register(_:entity:)"
         case registerWithOptions = "register(options:entity:)"
         case register = "register(entity:)"
-        case registerStoryboardable = "registerStoryboardable(_:entity:)"
-        #if os(iOS)
-        case registerViewController = "registerViewController(_:entity:)"
-        #endif
+        case registration = "registration(for:name:)"
     }
 
     init() {}
 
     @discardableResult
-    func register<T>(_ type: T.Type, options: Options, _ entity: @escaping (Resolver, Arguments) -> T) -> Forwarding {
+    func register<T>(_ type: T.Type, options: Options, _ entity: @escaping (Resolver, Arguments) -> T) -> Forwarding
+    where T: AnyObject {
         return spryify(arguments: type, options, entity)
     }
 
     @discardableResult
-    func register<T>(_ type: T.Type, _ entity: @escaping (Resolver, Arguments) -> T) -> Forwarding {
+    func register<T>(_ type: T.Type, _ entity: @escaping (Resolver, Arguments) -> T) -> Forwarding
+    where T: AnyObject {
         return spryify(arguments: type, entity)
     }
 
     @discardableResult
-    func register(options: Options, _ entity: @escaping (Resolver, Arguments) -> some Any) -> Forwarding {
+    func register(options: Options, _ entity: @escaping (Resolver, Arguments) -> some AnyObject) -> Forwarding
+    {
         return spryify(arguments: options, entity)
     }
 
     @discardableResult
-    func register(_ entity: @escaping (Resolver, Arguments) -> some Any) -> Forwarding {
+    func register(_ entity: @escaping (Resolver, Arguments) -> some AnyObject) -> Forwarding {
         return spryify(arguments: entity)
     }
 
-    func registerStoryboardable<T>(_ type: T.Type, _ entity: @escaping (T, Resolver) -> Void) {
-        return spryify(arguments: type, entity)
+    func registration(for type: (some Any).Type, name: String?) -> NInject.Forwarding {
+        return spryify(arguments: type, name)
     }
-
-    #if os(iOS)
-    func registerViewController<T: UIViewController>(_ type: T.Type, _ entity: @escaping (T, Resolver) -> Void) {
-        return spryify(arguments: type, entity)
-    }
-    #endif
 }

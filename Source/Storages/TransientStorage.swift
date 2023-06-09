@@ -11,6 +11,6 @@ final class TransientStorage: Storage {
     }
 
     func resolve(with resolver: Resolver, arguments: Arguments) -> Entity {
-        generator(resolver, arguments)
+        return generator(resolver, arguments)
     }
 }

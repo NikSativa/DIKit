@@ -3,7 +3,7 @@ import Foundation
 public final class Lazy<Wrapped>: InstanceWrapper {
     private var factory: Lazy.Factory?
 
-    public lazy var instance: Wrapped = {
+    public private(set) lazy var instance: Wrapped = {
         defer {
             factory = nil
         }

@@ -1,46 +1,40 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.8
 // swiftformat:disable all
 import PackageDescription
 
-#if TARGET_OS_MAC
-let exclude = ["Resources"]
-#else
-let exclude = ["Resources/cocoapods"]
-#endif
-
 let package = Package(
     name: "NInject",
-    platforms: [.iOS(.v13), .macOS(.v10_15)],
+    platforms: [
+        .iOS(.v13),
+        .macOS(.v11)
+    ],
     products: [
         .library(name: "NInject", targets: ["NInject"]),
         .library(name: "NInjectTestHelpers", targets: ["NInjectTestHelpers"])
     ],
     dependencies: [
-        .package(url: "https://github.com/NikSativa/NSpry.git", .upToNextMajor(from: "1.2.9")),
-        .package(url: "https://github.com/Quick/Quick.git", .upToNextMajor(from: "6.1.0")),
-        .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "11.2.1"))
+        .package(url: "https://github.com/NikSativa/NSpry.git", .upToNextMajor(from: "2.0.1")),
     ],
     targets: [
         .target(name: "NInject",
                 dependencies: [
                 ],
-                path: "Source"),
+                path: "Source"
+               ),
         .target(name: "NInjectTestHelpers",
                 dependencies: [
                     "NInject",
                     "NSpry"
                 ],
-                path: "TestHelpers"),
+                path: "TestHelpers"
+               ),
         .testTarget(name: "NInjectTests",
                     dependencies: [
                         "NInject",
                         "NInjectTestHelpers",
                         "NSpry",
-                        .product(name: "NSpry_Nimble", package: "NSpry"),
-                        "Nimble",
-                        "Quick"
                     ],
-                    path: "Tests",
-                    exclude: exclude)
+                    path: "Tests"
+                   )
     ]
 )

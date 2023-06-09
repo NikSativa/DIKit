@@ -2,18 +2,27 @@ import Foundation
 
 public protocol Forwarding {
     @discardableResult
-    func implements<T>(_ type: T.Type, named: String?, accessLevel: Options.AccessLevel?) -> Self
+    func implements<T: AnyObject>(_ type: T.Type, named: String?, accessLevel: Options.AccessLevel?) -> Self
+
+    @discardableResult
+    func implementsAny<T>(_ type: T.Type, named: String?, accessLevel: Options.AccessLevel?) -> Self
 }
 
 public extension Forwarding {
     @discardableResult
-    func implements<T>(_ type: T.Type = T.self, named: String? = nil, accessLevel: Options.AccessLevel? = nil) -> Self {
+    func implements<T: AnyObject>(_ type: T.Type = T.self, named: String? = nil, accessLevel: Options.AccessLevel? = nil) -> Self {
         return implements(type, named: named, accessLevel: accessLevel)
+    }
+
+    @discardableResult
+    func implementsAny<T>(_ type: T.Type = T.self, named: String? = nil, accessLevel: Options.AccessLevel? = nil) -> Self {
+        return implementsAny(type, named: named, accessLevel: accessLevel)
     }
 }
 
 protocol ForwardRegistrator: AnyObject {
-    func register<T>(_ type: T.Type, named: String?, storage: Storage)
+    func register<T: AnyObject>(_ type: T.Type, named: String?, storage: Storage)
+    func registerAny<T>(_ type: T.Type, named: String?, storage: Storage)
 }
 
 struct Forwarder: Forwarding {
@@ -27,8 +36,14 @@ struct Forwarder: Forwarding {
     }
 
     @discardableResult
-    func implements(_ type: (some Any).Type, named: String?, accessLevel: Options.AccessLevel?) -> Self {
+    func implements(_ type: (some AnyObject).Type, named: String?, accessLevel: Options.AccessLevel?) -> Self {
         container.register(type, named: named, storage: ForwardingStorage(storage: storage, accessLevel: accessLevel))
+        return self
+    }
+
+    @discardableResult
+    func implementsAny(_ type: (some Any).Type, named: String?, accessLevel: Options.AccessLevel?) -> Self {
+        container.registerAny(type, named: named, storage: ForwardingStorage(storage: storage, accessLevel: accessLevel))
         return self
     }
 }

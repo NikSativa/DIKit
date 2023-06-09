@@ -1,13 +1,12 @@
 import Foundation
 
 final class ContainerStorage: Storage {
-    private var entity: Entity?
+    private var entity: Any?
     private let generator: Generator
     let accessLevel: Options.AccessLevel
 
     init(accessLevel: Options.AccessLevel,
-         generator: @escaping Generator,
-         entity _: Entity? = nil) {
+         generator: @escaping Generator) {
         self.accessLevel = accessLevel
         self.generator = generator
     }

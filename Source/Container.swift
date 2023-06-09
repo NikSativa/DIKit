@@ -2,16 +2,10 @@ import Foundation
 
 public final class Container {
     private typealias Storyboardable = (Any, Resolver) -> Void
-
     private var storages: [String: Storage] = [:]
-    private var storyboards: [String: Storyboardable] = [:]
-    private let isStoryboardable: Bool
 
     public init(assemblies: [Assembly],
-                shared: Bool = true,
-                isStoryboardable: Bool = false) {
-        self.isStoryboardable = isStoryboardable
-
+                shared: Bool = true) {
         let allAssemblies = assemblies.flatMap(\.allDependencies).unified()
         for assembly in allAssemblies {
             assembly.assemble(with: self)
@@ -22,7 +16,7 @@ public final class Container {
         }
 
         #if os(iOS)
-        register(ViewControllerFactory.self) { [unowned self] _, _ in
+        registerAny(ViewControllerFactory.self) { [unowned self] _, _ in
             Impl.ViewControllerFactory(container: self)
         }
         #endif
@@ -36,27 +30,6 @@ public final class Container {
 
     public convenience init(assemblies: Assembly..., shared: Bool = false) {
         self.init(assemblies: assemblies, shared: shared)
-    }
-
-    @available(*, deprecated, message: "Will be removed soon")
-    func resolveStoryboardable(_ object: Any, as type: some Any, name: String? = nil) {
-        let key = key(type, name: name)
-        resolveStoryboardable(object, by: key)
-    }
-
-    func resolveStoryboardable(_ object: Any) {
-        let key = key(object, name: nil)
-        resolveStoryboardable(object, by: key)
-    }
-
-    func resolveStoryboardable(_ object: Any, by key: String) {
-        guard isStoryboardable else {
-            return
-        }
-
-        let storyboard = storyboards[key]
-        assert(!storyboard.isNil, "\(key) is not registered")
-        storyboard?(object, self)
     }
 
     private func key(_ type: some Any, name: String?) -> String {
@@ -73,35 +46,11 @@ public final class Container {
 // MARK: - Registrator
 
 extension Container: Registrator {
-    public func registration(for type: (some Any).Type, name: String?) -> Forwarding {
-        let key = key(type, name: name)
-
-        guard let storage = storages[key] else {
-            fatalError("can't resolve dependency of <\(type)>")
-        }
-
-        return Forwarder(container: self, storage: storage)
-    }
-
-    public func registerStoryboardable<T>(_ type: T.Type,
-                                          _ entity: @escaping (T, Resolver) -> Void) {
-        let key = key(type, name: nil)
-
-        if isStoryboardable {
-            assert(storyboards[key].isNil, "\(type) is already registered with \(key)")
-        }
-
-        storyboards[key] = { c, r in
-            if let c = c as? T {
-                entity(c, r)
-            }
-        }
-    }
-
     @discardableResult
     public func register<T>(_ type: T.Type,
-                            options: Options = .default,
-                            _ entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+                            options: Options,
+                            entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding
+    where T: AnyObject {
         let key = key(type, name: options.name)
 
         if let found = storages[key] {
@@ -130,12 +79,55 @@ extension Container: Registrator {
         storages[key] = storage
         return Forwarder(container: self, storage: storage)
     }
+
+    public func registration(for type: (some AnyObject).Type,
+                             name: String?) -> Forwarding {
+        let key = key(type, name: name)
+
+        guard let storage = storages[key] else {
+            fatalError("can't resolve dependency of <\(type)>")
+        }
+
+        return Forwarder(container: self, storage: storage)
+    }
+
+    @discardableResult
+    public func registerAny<T>(_ type: T.Type,
+                               name: String?,
+                               accessLevel: Options.AccessLevel,
+                               entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+        let key = key(type, name: name)
+
+        if let found = storages[key] {
+            switch found.accessLevel {
+            case .final:
+                assertionFailure("\(type) is already registered with \(key)")
+            case .open:
+                break
+            }
+        }
+
+        let storage: Storage = ContainerStorage(accessLevel: .open, generator: entity)
+        storages[key] = storage
+        return Forwarder(container: self, storage: storage)
+    }
+
+    public func registrationOfAny(for type: (some Any).Type,
+                                  name: String?) -> Forwarding {
+        let key = key(type, name: name)
+
+        guard let storage = storages[key] else {
+            fatalError("can't resolve dependency of <\(type)>")
+        }
+
+        return Forwarder(container: self, storage: storage)
+    }
 }
 
 // MARK: - ForwardRegistrator
 
 extension Container: ForwardRegistrator {
-    func register(_ type: (some Any).Type, named: String?, storage: Storage) {
+    func registerAny(_ type: (some Any).Type, named: String?, storage: Storage) {
         let key = key(type, name: named)
 
         if let found = storages[key] {
@@ -150,8 +142,8 @@ extension Container: ForwardRegistrator {
         storages[key] = storage
     }
 
-    func register(_ type: (some Any).Type, storage: Storage) {
-        let key = key(type, name: nil)
+    func register(_ type: (some AnyObject).Type, named: String?, storage: Storage) {
+        let key = key(type, name: named)
 
         if let found = storages[key] {
             switch found.accessLevel {
@@ -181,10 +173,7 @@ extension Container: Resolver {
 
 extension Container /* Storyboardable */ {
     private func makeShared() {
-        if isStoryboardable {
-            assert(InjectSettings.container.isNil, "storyboard handler was registered twice")
-        }
-
+        assert(InjectSettings.container.isNil, "storyboard handler was registered twice")
         InjectSettings.container = self
     }
 }

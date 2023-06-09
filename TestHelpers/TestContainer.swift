@@ -28,7 +28,11 @@ private final class TestRegistrator {
 // MARK: - ForwardRegistrator
 
 extension TestRegistrator: ForwardRegistrator {
-    func register(_ type: (some Any).Type, named: String?, storage: Storage) {
+    func register(_ type: (some AnyObject).Type, named: String?, storage: Storage) {
+        registered.append(.forwardingName(to: type, name: named, accessLevel: storage.accessLevel))
+    }
+
+    func registerAny(_ type: (some Any).Type, named: String?, storage: Storage) {
         registered.append(.forwardingName(to: type, name: named, accessLevel: storage.accessLevel))
     }
 }
@@ -36,19 +40,13 @@ extension TestRegistrator: ForwardRegistrator {
 // MARK: - Registrator
 
 extension TestRegistrator: Registrator {
+    func registration(for type: (some Any).Type, name: String?) -> NInject.Forwarding {
+        fatalError()
+    }
+
     @discardableResult
-    func register<T>(_ type: T.Type, options: Options, _ entity: @escaping (Resolver, Arguments) -> T) -> Forwarding {
+    func register<T: AnyObject>(_ type: T.Type, options: Options, _ entity: @escaping (Resolver, Arguments) -> T) -> Forwarding {
         registered.append(.register(type, options))
         return Forwarder(container: self, storage: TransientStorage(accessLevel: options.accessLevel, generator: entity))
     }
-
-    func registerStoryboardable<T>(_ type: T.Type, _: @escaping (T, Resolver) -> Void) {
-        registered.append(.registerStoryboardable(type))
-    }
-
-    #if os(iOS)
-    func registerViewController<T: UIViewController>(_ type: T.Type, _: @escaping (T, Resolver) -> Void) {
-        registered.append(.registerViewController(type))
-    }
-    #endif
 }
