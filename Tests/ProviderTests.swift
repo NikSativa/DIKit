@@ -16,6 +16,18 @@ final class ProviderTests: XCTestCase {
             }
             return Instance(id: self.resolvingCounter)
         }
+
+        XCTAssertThrowsAssertion {
+            self.container.registerAny(Instance.self, accessLevel: options.accessLevel) {
+                return Instance(id: self.resolvingCounter)
+            }
+        }
+
+        XCTAssertThrowsAssertion {
+            self.container.register(Int.self, options: options) {
+                return 10
+            }
+        }
     }
 
     func test_when_registered_weak() {

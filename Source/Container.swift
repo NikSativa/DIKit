@@ -49,8 +49,7 @@ extension Container: Registrator {
     @discardableResult
     public func register<T>(_ type: T.Type,
                             options: Options,
-                            entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding
-    where T: AnyObject {
+                            entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
         let key = key(type, name: options.name)
 
         if let found = storages[key] {
@@ -80,7 +79,7 @@ extension Container: Registrator {
         return Forwarder(container: self, storage: storage)
     }
 
-    public func registration(for type: (some AnyObject).Type,
+    public func registration(for type: (some Any).Type,
                              name: String?) -> Forwarding {
         let key = key(type, name: name)
 

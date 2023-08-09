@@ -13,7 +13,7 @@ let package = Package(
         .library(name: "NInjectTestHelpers", targets: ["NInjectTestHelpers"])
     ],
     dependencies: [
-        .package(url: "https://github.com/NikSativa/NSpry.git", .upToNextMajor(from: "2.0.1")),
+        .package(url: "https://github.com/NikSativa/NSpry.git", .upToNextMajor(from: "2.1.2")),
     ],
     targets: [
         .target(name: "NInject",

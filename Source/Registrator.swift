@@ -8,11 +8,9 @@ public protocol Registrator {
     func register<T>(_ type: T.Type,
                      options: Options,
                      entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding
-        where T: AnyObject
 
     func registration<T>(for type: T.Type,
                          name: String?) -> Forwarding
-        where T: AnyObject
 
     // MARK: - Any
 
@@ -33,8 +31,8 @@ public extension Registrator {
     @discardableResult
     func register<T>(_ type: T.Type,
                      options: Options = .default,
-                     entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding
-    where T: AnyObject {
+                     entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+        assert(type is AnyObject.Type, "use it only for RefType")
         return register(type,
                         options: options,
                         entity: entity)
@@ -43,8 +41,8 @@ public extension Registrator {
     @discardableResult
     func register<T>(_ type: T.Type,
                      options: Options = .default,
-                     entity: @escaping (Resolver) -> T) -> Forwarding
-    where T: AnyObject {
+                     entity: @escaping (Resolver) -> T) -> Forwarding {
+        assert(type is AnyObject.Type, "use it only for RefType")
         return register(type,
                         options: options) { r, _ in
             return entity(r)
@@ -54,15 +52,16 @@ public extension Registrator {
     @discardableResult
     func register<T>(_ type: T.Type,
                      options: Options = .default,
-                     entity: @escaping () -> T) -> Forwarding
-    where T: AnyObject {
+                     entity: @escaping () -> T) -> Forwarding {
+        assert(type is AnyObject.Type, "use it only for RefType")
         return register(type,
                         options: options) { _, _ in
             return entity()
         }
     }
 
-    func registration(for type: (some AnyObject).Type, name: String? = nil) -> Forwarding {
+    func registration(for type: (some Any).Type, name: String? = nil) -> Forwarding {
+        assert(type is AnyObject.Type, "use it only for RefType")
         return registration(for: type,
                             name: name)
     }
@@ -74,6 +73,7 @@ public extension Registrator {
                         name: String? = nil,
                         accessLevel: Options.AccessLevel = .default,
                         entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+        assert(!(type is AnyObject.Type), "use it only for ValueType")
         return registerAny(type,
                            name: name,
                            accessLevel: accessLevel,
@@ -85,6 +85,7 @@ public extension Registrator {
                         name: String? = nil,
                         accessLevel: Options.AccessLevel = .default,
                         entity: @escaping (Resolver) -> T) -> Forwarding {
+        assert(!(type is AnyObject.Type), "use it only for ValueType")
         return registerAny(type,
                            name: name,
                            accessLevel: accessLevel) { r, _ in
@@ -97,6 +98,7 @@ public extension Registrator {
                         name: String? = nil,
                         accessLevel: Options.AccessLevel = .default,
                         entity: @escaping () -> T) -> Forwarding {
+        assert(!(type is AnyObject.Type), "use it only for ValueType")
         return registerAny(type,
                            name: name,
                            accessLevel: accessLevel) { _, _ in
@@ -105,6 +107,7 @@ public extension Registrator {
     }
 
     func registrationOfAny(for type: (some Any).Type, name: String? = nil) -> Forwarding {
+        assert(!(type is AnyObject.Type), "use it only for ValueType")
         return registrationOfAny(for: type,
                                  name: name)
     }
