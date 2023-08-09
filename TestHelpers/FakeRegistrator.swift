@@ -13,39 +13,42 @@ final class FakeRegistrator: Registrator, Spryable {
     }
 
     enum Function: String, StringRepresentable {
-        case registerWithTypeAndOptions = "register(_:options:entity:)"
-        case registerWithType = "register(_:entity:)"
-        case registerWithOptions = "register(options:entity:)"
-        case register = "register(entity:)"
+        case register = "register(_:options:entity:)"
         case registration = "registration(for:name:)"
+        case registerAny = "registerAny(_:name:accessLevel:entity:)"
+        case registrationOfAny = "registrationOfAny(for:name:)"
     }
 
     init() {}
 
+    // MARK: - AnyObject
+
+    /// register classes
     @discardableResult
-    func register<T>(_ type: T.Type, options: Options, _ entity: @escaping (Resolver, Arguments) -> T) -> Forwarding
-    where T: AnyObject {
+    func register<T>(_ type: T.Type,
+                     options: Options,
+                     entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
         return spryify(arguments: type, options, entity)
     }
 
-    @discardableResult
-    func register<T>(_ type: T.Type, _ entity: @escaping (Resolver, Arguments) -> T) -> Forwarding
-    where T: AnyObject {
-        return spryify(arguments: type, entity)
+    func registration(for type: (some Any).Type,
+                      name: String?) -> Forwarding {
+        return spryify(arguments: type, name)
     }
 
+    // MARK: - Any
+
+    /// register structs/valueType
     @discardableResult
-    func register(options: Options, _ entity: @escaping (Resolver, Arguments) -> some AnyObject) -> Forwarding
-    {
-        return spryify(arguments: options, entity)
+    func registerAny<T>(_ type: T.Type,
+                        name: String?,
+                        accessLevel: Options.AccessLevel,
+                        entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+        return spryify(arguments: type, name, accessLevel, entity)
     }
 
-    @discardableResult
-    func register(_ entity: @escaping (Resolver, Arguments) -> some AnyObject) -> Forwarding {
-        return spryify(arguments: entity)
-    }
-
-    func registration(for type: (some Any).Type, name: String?) -> NInject.Forwarding {
+    func registrationOfAny(for type: (some Any).Type,
+                           name: String?) -> Forwarding {
         return spryify(arguments: type, name)
     }
 }

@@ -46,10 +46,15 @@ public final class Container {
 // MARK: - Registrator
 
 extension Container: Registrator {
+    // MARK: - AnyObject
+
+    /// register classes
     @discardableResult
     public func register<T>(_ type: T.Type,
                             options: Options,
                             entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+        assert(type is AnyObject.Type, "use it only for RefType")
+
         let key = key(type, name: options.name)
 
         if let found = storages[key] {
@@ -81,6 +86,8 @@ extension Container: Registrator {
 
     public func registration(for type: (some Any).Type,
                              name: String?) -> Forwarding {
+        assert(type is AnyObject.Type, "use it only for RefType")
+
         let key = key(type, name: name)
 
         guard let storage = storages[key] else {
@@ -90,11 +97,15 @@ extension Container: Registrator {
         return Forwarder(container: self, storage: storage)
     }
 
+    // MARK: - Any
+
+    /// register structs/valueType
     @discardableResult
     public func registerAny<T>(_ type: T.Type,
                                name: String?,
                                accessLevel: Options.AccessLevel,
                                entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+        assert(!(type is AnyObject.Type), "use it only for ValueType")
         let key = key(type, name: name)
 
         if let found = storages[key] {
@@ -113,6 +124,8 @@ extension Container: Registrator {
 
     public func registrationOfAny(for type: (some Any).Type,
                                   name: String?) -> Forwarding {
+        assert(!(type is AnyObject.Type), "use it only for ValueType")
+
         let key = key(type, name: name)
 
         guard let storage = storages[key] else {
@@ -127,6 +140,8 @@ extension Container: Registrator {
 
 extension Container: ForwardRegistrator {
     func registerAny(_ type: (some Any).Type, named: String?, storage: Storage) {
+        assert(!(type is AnyObject.Type), "use it only for ValueType")
+
         let key = key(type, name: named)
 
         if let found = storages[key] {
@@ -141,7 +156,9 @@ extension Container: ForwardRegistrator {
         storages[key] = storage
     }
 
-    func register(_ type: (some AnyObject).Type, named: String?, storage: Storage) {
+    func register(_ type: (some Any).Type, named: String?, storage: Storage) {
+        assert(type is AnyObject.Type, "use it only for RefType")
+
         let key = key(type, name: named)
 
         if let found = storages[key] {

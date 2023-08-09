@@ -16,6 +16,18 @@ final class LazyTests: XCTestCase {
             }
             return Instance(id: self.resolvingCounter)
         }
+
+        XCTAssertThrowsAssertion {
+            self.container.registerAny(Instance.self, accessLevel: option.accessLevel) {
+                return Instance(id: self.resolvingCounter)
+            }
+        }
+
+        XCTAssertThrowsAssertion {
+            self.container.register(Int.self, options: option) {
+                return 10
+            }
+        }
     }
 
     func test_when_registered_weak() {
