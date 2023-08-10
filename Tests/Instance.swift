@@ -1,6 +1,10 @@
 import Foundation
 
-final class Instance: Equatable {
+protocol Abstract: Equatable {
+    init(id: Int)
+}
+
+final class Instance: Abstract {
     let id: Int
 
     init(id: Int) {
@@ -9,5 +13,13 @@ final class Instance: Equatable {
 
     static func ==(lhs: Instance, rhs: Instance) -> Bool {
         return lhs.id == rhs.id
+    }
+}
+
+struct Value: Abstract {
+    let id: Int
+
+    init(id: Int) {
+        self.id = id
     }
 }
