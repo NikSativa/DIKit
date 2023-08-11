@@ -5,11 +5,9 @@ import XCTest
 @testable import NInject
 @testable import NInjectTestHelpers
 
-final class InstanceProviderTests: CommonLazyTests<Instance> {
-}
+final class InstanceProviderTests: CommonLazyTests<Instance> {}
 
-final class ValueProviderTests: CommonLazyTests<Value> {
-}
+final class ValueProviderTests: CommonLazyTests<Value> {}
 
 class CommonProviderTests<T: Abstract>: XCTestCase {
     private var resolvingCounter: Int = 0
