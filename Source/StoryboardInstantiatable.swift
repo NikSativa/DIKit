@@ -25,27 +25,39 @@ public extension SelfInjectable {
 
 extension NSObject: SelfInjectable {
     private enum AssociatedKeys {
-        static var initialization = "NInject.isInitializedFromDI"
-        static var dipTag = "NInject.dipTag"
+        static let initialization: StaticString = "NInject.isInitializedFromDI"
+        static let dipTag: StaticString = "NInject.dipTag"
     }
 
     @objc
     internal var isInitializedFromDI: Bool {
         get {
-            return (objc_getAssociatedObject(self, &AssociatedKeys.initialization) as? Bool) ?? false
+            return withUnsafePointer(to: AssociatedKeys.initialization) { key in
+                var key = key
+                return (objc_getAssociatedObject(self, &key) as? Bool) ?? false
+            }
         }
         set {
-            objc_setAssociatedObject(self, &AssociatedKeys.initialization, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            withUnsafePointer(to: AssociatedKeys.initialization) { key in
+                var key = key
+                objc_setAssociatedObject(self, &key, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            }
         }
     }
 
     @objc
     internal private(set) var dipTag: String? {
         get {
-            return objc_getAssociatedObject(self, &AssociatedKeys.dipTag) as? String
+            withUnsafePointer(to: AssociatedKeys.dipTag) { key in
+                var key = key
+                return objc_getAssociatedObject(self, &key) as? String
+            }
         }
         set {
-            objc_setAssociatedObject(self, &AssociatedKeys.dipTag, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            withUnsafePointer(to: AssociatedKeys.dipTag) { key in
+                var key = key
+                objc_setAssociatedObject(self, &key, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            }
             resolveDependencies()
         }
     }
