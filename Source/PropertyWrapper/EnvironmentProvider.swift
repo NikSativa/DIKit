@@ -16,7 +16,7 @@ public struct EnvironmentProvider<Value>: DynamicProperty {
     private let arguments: Arguments
 
     public init(named name: String? = nil,
-         with arguments: Arguments = .init()) {
+                with arguments: Arguments = .init()) {
         self.name = name
         self.arguments = arguments
     }
