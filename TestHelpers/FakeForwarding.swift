@@ -1,6 +1,6 @@
+import DIKit
 import Foundation
-import NInject
-import NSpry
+import SpryKit
 
 final class FakeForwarding: Forwarding, Spryable {
     enum ClassFunction: String, StringRepresentable {

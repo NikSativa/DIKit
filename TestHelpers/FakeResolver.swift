@@ -1,6 +1,6 @@
+import DIKit
 import Foundation
-import NInject
-import NSpry
+import SpryKit
 
 final class FakeResolver: Resolver, Spryable {
     enum ClassFunction: String, StringRepresentable {

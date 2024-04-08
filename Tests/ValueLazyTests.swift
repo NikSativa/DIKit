@@ -1,38 +1,32 @@
+import DIKit
 import Foundation
-import NSpry
+import SpryKit
 import XCTest
 
-@testable import NInject
-@testable import NInjectTestHelpers
-
-final class InstanceProviderTests: CommonLazyTests<Instance> {}
-
-final class ValueProviderTests: CommonLazyTests<Value> {}
-
-class CommonProviderTests<T: Abstract>: XCTestCase {
+final class ValueLazyTests: XCTestCase {
     private var resolvingCounter: Int = 0
     private let container: Container = .init(assemblies: [], shared: false)
 
-    private func setup(_ options: Options) {
-        container.register(T.self, options: options) {
+    private func setup(_ option: Options) {
+        container.register(Value.self, options: option) {
             defer {
                 self.resolvingCounter += 1
             }
-            return T(id: self.resolvingCounter)
+            return Value(id: self.resolvingCounter)
         }
     }
 
     func test_when_registered_weak() {
         setup(.weak)
 
-        var subject: Provider<T> = container.resolveWrapped()
+        var subject: Lazy<Value> = container.resolveWrapped()
         XCTAssertEqual(resolvingCounter, 0)
 
-        var i1: T? = subject.instance
+        var i1: Value? = subject.instance
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i1)
 
-        var i2: T? = subject.instance
+        var i2: Value? = subject.instance
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i2)
         XCTAssertEqual(i1, i2)
@@ -44,7 +38,7 @@ class CommonProviderTests<T: Abstract>: XCTestCase {
         subject = container.resolveWrapped()
 
         i1 = subject.instance
-        XCTAssertEqual(resolvingCounter, 2)
+        XCTAssertEqual(resolvingCounter, 2) // retained by wrapper
         XCTAssertNotNil(i1)
 
         i2 = subject.instance
@@ -56,17 +50,17 @@ class CommonProviderTests<T: Abstract>: XCTestCase {
     func test_when_registered_transient() {
         setup(.transient)
 
-        var subject: Provider<T> = container.resolveWrapped()
+        var subject: Lazy<Value> = container.resolveWrapped()
         XCTAssertEqual(resolvingCounter, 0)
 
-        var i1: T? = subject.instance
+        var i1: Value? = subject.instance
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i1)
 
-        var i2: T? = subject.instance
-        XCTAssertEqual(resolvingCounter, 2)
+        var i2: Value? = subject.instance
+        XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i2)
-        XCTAssertNotEqual(i1, i2)
+        XCTAssertEqual(i1, i2)
 
         // release prev instance
         i1 = nil
@@ -75,26 +69,26 @@ class CommonProviderTests<T: Abstract>: XCTestCase {
         subject = container.resolveWrapped()
 
         i1 = subject.instance
-        XCTAssertEqual(resolvingCounter, 3)
+        XCTAssertEqual(resolvingCounter, 2) // retained by wrapper
         XCTAssertNotNil(i1)
 
         i2 = subject.instance
-        XCTAssertEqual(resolvingCounter, 4)
+        XCTAssertEqual(resolvingCounter, 2)
         XCTAssertNotNil(i2)
-        XCTAssertNotEqual(i1, i2)
+        XCTAssertEqual(i1, i2)
     }
 
     func test_when_registered_container() {
         setup(.container)
 
-        var subject: Provider<T> = container.resolveWrapped()
+        var subject: Lazy<Value> = container.resolveWrapped()
         XCTAssertEqual(resolvingCounter, 0)
 
-        var i1: T? = subject.instance
+        var i1: Value? = subject.instance
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i1)
 
-        var i2: T? = subject.instance
+        var i2: Value? = subject.instance
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i2)
         XCTAssertEqual(i1, i2)

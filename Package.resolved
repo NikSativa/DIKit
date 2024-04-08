@@ -19,12 +19,12 @@
       }
     },
     {
-      "identity" : "nspry",
+      "identity" : "SpryKit",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/NikSativa/NSpry.git",
+      "location" : "https://github.com/NikSativa/SpryKit.git",
       "state" : {
-        "revision" : "2bd07efd49af15a1afd1e44ea9212383c55d3a31",
-        "version" : "2.1.4"
+        "revision" : "092edf2d2551b36f64dde5e015d096855443ebe8",
+        "version" : "2.2.0"
       }
     }
   ],

@@ -1,11 +1,11 @@
 import Foundation
-import NSpry
+import SpryKit
 
 #if os(iOS)
 import UIKit
 #endif
 
-import NInject
+import DIKit
 
 final class FakeRegistrator: Registrator, Spryable {
     enum ClassFunction: String, StringRepresentable {

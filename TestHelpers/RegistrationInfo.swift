@@ -1,6 +1,6 @@
 import Foundation
-import NSpry
-@testable import NInject
+import SpryKit
+@testable import DIKit
 
 enum RegistrationInfo: Equatable, SpryEquatable {
     case register(Any.Type, Options)

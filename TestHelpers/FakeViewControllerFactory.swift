@@ -1,7 +1,7 @@
 #if os(iOS)
+import DIKit
 import Foundation
-import NInject
-import NSpry
+import SpryKit
 import UIKit
 
 final class FakeViewControllerFactory: ViewControllerFactory, Spryable {

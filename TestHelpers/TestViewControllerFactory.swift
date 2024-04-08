@@ -1,8 +1,8 @@
 #if os(iOS)
 import Foundation
-import NSpry
+import SpryKit
 import UIKit
-@testable import NInject
+@testable import DIKit
 
 public enum NTestViewControllerFactory {
     public static func instantiate<T>(from nibName: String? = nil, bundle: Bundle, container: Container) -> T where T: UIViewController {

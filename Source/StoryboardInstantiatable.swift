@@ -25,8 +25,8 @@ public extension SelfInjectable {
 
 extension NSObject: SelfInjectable {
     private enum AssociatedKeys {
-        static let initialization: StaticString = "NInject.isInitializedFromDI"
-        static let dipTag: StaticString = "NInject.dipTag"
+        static let initialization: StaticString = "DIKit.isInitializedFromDI"
+        static let dipTag: StaticString = "DIKit.dipTag"
     }
 
     @objc

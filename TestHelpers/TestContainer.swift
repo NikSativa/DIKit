@@ -1,12 +1,12 @@
+import DIKit
 import Foundation
-import NInject
-import NSpry
+import SpryKit
 
 #if os(iOS)
 import UIKit
 #endif
 
-@testable import NInject
+@testable import DIKit
 
 final class TestContainer {
     let registered: [RegistrationInfo]
@@ -40,7 +40,7 @@ extension TestRegistrator: ForwardRegistrator {
 // MARK: - Registrator
 
 extension TestRegistrator: Registrator {
-    func registration(for type: (some Any).Type, name: String?) -> NInject.Forwarding {
+    func registration(for type: (some Any).Type, name: String?) -> DIKit.Forwarding {
         fatalError()
     }
 

@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "NInject",
+    name: "DIKit",
     platforms: [
         .iOS(.v13),
         .macOS(.v11),
@@ -12,34 +12,34 @@ let package = Package(
         .watchOS(.v6)
     ],
     products: [
-        .library(name: "NInject", targets: ["NInject"]),
-        .library(name: "NInjectTestHelpers", targets: ["NInjectTestHelpers"])
+        .library(name: "DIKit", targets: ["DIKit"]),
+        .library(name: "DIKitTestHelpers", targets: ["DIKitTestHelpers"])
     ],
     dependencies: [
-        .package(url: "https://github.com/NikSativa/NSpry.git", .upToNextMajor(from: "2.1.4")),
+        .package(url: "https://github.com/NikSativa/SpryKit.git", .upToNextMajor(from: "2.2.0")),
     ],
     targets: [
-        .target(name: "NInject",
+        .target(name: "DIKit",
                 dependencies: [
                 ],
                 path: "Source",
                 resources: [
                     .copy("../PrivacyInfo.xcprivacy")
                 ]),
-        .target(name: "NInjectTestHelpers",
+        .target(name: "DIKitTestHelpers",
                 dependencies: [
-                    "NInject",
-                    "NSpry"
+                    "DIKit",
+                    "SpryKit"
                 ],
                 path: "TestHelpers",
                 resources: [
                     .copy("../PrivacyInfo.xcprivacy")
                 ]),
-        .testTarget(name: "NInjectTests",
+        .testTarget(name: "DIKitTests",
                     dependencies: [
-                        "NInject",
-                        "NInjectTestHelpers",
-                        "NSpry",
+                        "DIKit",
+                        "DIKitTestHelpers",
+                        "SpryKit",
                     ],
                     path: "Tests")
     ]
