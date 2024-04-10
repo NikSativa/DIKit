@@ -4,8 +4,8 @@ public final class Container {
     private typealias Storyboardable = (Any, Resolver) -> Void
     private var storages: [String: Storage] = [:]
 
-    public init(assemblies: [Assembly],
-                shared: Bool = true) {
+    public init(shared: Bool = true,
+                assemblies: [Assembly]) {
         let allAssemblies = assemblies.flatMap(\.allDependencies).unified()
         for assembly in allAssemblies {
             assembly.assemble(with: self)
@@ -28,8 +28,8 @@ public final class Container {
         }
     }
 
-    public convenience init(assemblies: Assembly..., shared: Bool = false) {
-        self.init(assemblies: assemblies, shared: shared)
+    public convenience init(shared: Bool = false, assemblies: Assembly...) {
+        self.init(shared: shared, assemblies: assemblies)
     }
 
     private func key(_ type: some Any, name: String?) -> String {

@@ -6,7 +6,7 @@ import XCTest
 final class InstanceProviderTests: XCTestCase {
     typealias T = Instance
     private var resolvingCounter: Int = 0
-    private let container: Container = .init(assemblies: [], shared: false)
+    private let container: Container = .init(shared: false, assemblies: [])
 
     private func setup(_ options: Options) {
         container.register(T.self, options: options) {
