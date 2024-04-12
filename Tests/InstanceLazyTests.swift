@@ -109,5 +109,3 @@ final class InstanceLazyTests: XCTestCase {
         XCTAssertEqual(i1, i2)
     }
 }
-
-class CommonLazyTests<T: Abstract>: XCTestCase {}
