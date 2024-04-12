@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:5.5
 // swiftformat:disable all
 import PackageDescription
 
@@ -17,7 +17,7 @@ let package = Package(
         .library(name: "DIKitTestHelpers", targets: ["DIKitTestHelpers"])
     ],
     dependencies: [
-        .package(url: "https://github.com/NikSativa/SpryKit.git", .upToNextMajor(from: "2.2.2"))
+        .package(url: "https://github.com/NikSativa/SpryKit.git", .upToNextMajor(from: "2.2.3"))
     ],
     targets: [
         .target(name: "DIKit",
