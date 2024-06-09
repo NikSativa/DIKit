@@ -13,9 +13,12 @@ public struct InjectProvider<Value> {
     }
 
     public init(named: String? = nil, with arguments: Arguments = .init()) {
-        assert(InjectSettings.resolver != nil)
+        guard let resolver = InjectSettings.resolver else {
+            fatalError("Container is not shared")
+        }
+
         self.projectedValue = .init(with: {
-            return InjectSettings.resolver!.resolve(named: named, with: arguments)
+            return resolver.resolve(named: named, with: arguments)
         })
     }
 }

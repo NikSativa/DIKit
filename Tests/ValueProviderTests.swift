@@ -5,7 +5,7 @@ import XCTest
 
 final class ValueProviderTests: XCTestCase {
     private var resolvingCounter: Int = 0
-    private let container: Container = .init(shared: false, assemblies: [])
+    private let container: Container = .init(assemblies: [])
 
     private func setup(_ options: Options) {
         container.register(Value.self, options: options) {

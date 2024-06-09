@@ -1,23 +1,40 @@
-
 #if os(iOS)
 import Foundation
 import UIKit
 
 public protocol ViewControllerFactory {
-    func instantiate<T: UIViewController>(from nibName: String?, bundle: Bundle) -> T
-    func createNavigationController<T, N>(from nibName: String?, bundle: Bundle) -> (navigation: N, root: T) where T: UIViewController, N: UINavigationController
+    func instantiate<T>(from nibName: String?, bundle: Bundle?) -> T
+        where T: UIViewController
+
+    func createNavigationController<T, N>(from nibName: String?, bundle: Bundle?) -> (navigation: N, root: T)
+        where T: UIViewController, N: UINavigationController
+}
+
+public extension ViewControllerFactory {
+    func instantiate<T: UIViewController>(_: T.Type = T.self, from nibName: String? = nil, bundle: Bundle? = nil) -> T {
+        return instantiate(from: nibName, bundle: bundle)
+    }
+
+    func createNavigationController<T, N>(_: T.Type = T.self,
+                                          navigation: N.Type = UINavigationController.self,
+                                          from nibName: String? = nil,
+                                          bundle: Bundle = .main) -> (navigation: N, root: T)
+    where T: UIViewController, N: UINavigationController {
+        return createNavigationController(from: nibName, bundle: bundle)
+    }
 }
 
 extension Impl {
     final class ViewControllerFactory {
-        private let container: Container
+        private let resolver: Resolver
 
-        init(container: Container) {
-            self.container = container
+        init(resolver: Resolver) {
+            self.resolver = resolver
         }
 
         private func instantiateInitialViewController<T: UIViewController>(from storyboard: UIStoryboard) -> T {
-            if #available(iOS 13.0, *), let controller = storyboard.instantiateInitialViewController(creator: { T(coder: $0) }) {
+            if #available(iOS 13.0, *),
+               let controller = storyboard.instantiateInitialViewController(creator: { T(coder: $0) }) {
                 return controller
             }
             return storyboard.instantiateInitialViewController() as! T
@@ -26,40 +43,19 @@ extension Impl {
 }
 
 extension Impl.ViewControllerFactory: ViewControllerFactory {
-    func instantiate<T: UIViewController>(from nibName: String? = nil, bundle: Bundle) -> T {
+    func instantiate<T: UIViewController>(from nibName: String? = nil, bundle: Bundle? = nil) -> T {
         let klass: String = nibName ?? String(describing: T.self)
         let storyboard = UIStoryboard(name: klass, bundle: bundle)
 
         let controller: T = instantiateInitialViewController(from: storyboard)
-        controller.resolveDependencies()
+        controller.resolveDependnciesIfNeeded(with: resolver)
         return controller
     }
 
-    func createNavigationController<T, N>(from nibName: String?, bundle: Bundle) -> (navigation: N, root: T) where T: UIViewController, N: UINavigationController {
+    func createNavigationController<T, N>(from nibName: String? = nil, bundle: Bundle? = nil) -> (navigation: N, root: T)
+    where T: UIViewController, N: UINavigationController {
         let root: T = instantiate(from: nibName, bundle: bundle)
         return (N(rootViewController: root), root)
-    }
-}
-
-public extension ViewControllerFactory {
-    func instantiate<T: UIViewController>(_: T.Type, from nibName: String?, bundle: Bundle) -> T {
-        return instantiate(from: nibName, bundle: bundle)
-    }
-
-    func instantiate<T: UIViewController>(_: T.Type, bundle: Bundle) -> T {
-        return instantiate(from: nil, bundle: bundle)
-    }
-
-    func instantiate<T: UIViewController>(bundle: Bundle) -> T {
-        return instantiate(from: nil, bundle: bundle)
-    }
-
-    func createNavigationController<T, N>(bundle: Bundle) -> (navigation: N, root: T) where T: UIViewController, N: UINavigationController {
-        return createNavigationController(from: nil, bundle: bundle)
-    }
-
-    func createNavigationController<T, N>(_: T.Type, bundle: Bundle) -> (navigation: N, root: T) where T: UIViewController, N: UINavigationController {
-        return createNavigationController(from: nil, bundle: bundle)
     }
 }
 #endif

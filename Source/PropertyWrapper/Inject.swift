@@ -9,7 +9,10 @@ public struct Inject<Value> {
     }
 
     public init(named: String? = nil, with arguments: Arguments = .init()) {
-        assert(InjectSettings.resolver != nil)
-        self.wrappedValue = InjectSettings.resolver!.resolve(named: named, with: arguments)
+        guard let resolver = InjectSettings.resolver else {
+            fatalError("Container is not shared")
+        }
+
+        self.wrappedValue = resolver.resolve(named: named, with: arguments)
     }
 }

@@ -4,22 +4,21 @@ public final class Container {
     private typealias Storyboardable = (Any, Resolver) -> Void
     private var storages: [String: Storage] = [:]
 
-    public init(shared: Bool = true,
-                assemblies: [Assembly]) {
+    public init(assemblies: [Assembly]) {
         let allAssemblies = assemblies.flatMap(\.allDependencies).unified()
         for assembly in allAssemblies {
             assembly.assemble(with: self)
         }
 
-        if shared {
-            makeShared()
-        }
-
         #if os(iOS)
-        register(ViewControllerFactory.self, options: .container) { [unowned self] _, _ in
-            Impl.ViewControllerFactory(container: self)
+        register(ViewControllerFactory.self, options: .transient) { resolver, _ in
+            Impl.ViewControllerFactory(resolver: resolver)
         }
         #endif
+    }
+
+    public convenience init(assemblies: Assembly...) {
+        self.init(assemblies: assemblies)
     }
 
     deinit {
@@ -28,8 +27,30 @@ public final class Container {
         }
     }
 
-    public convenience init(shared: Bool = false, assemblies: Assembly...) {
-        self.init(shared: shared, assemblies: assemblies)
+    /// Register shared container. Return `true` when correctly registered, otherwise `false`
+    /// Manually access to shared container is not recommended, but it's possible `InjectSettings.container`
+    @discardableResult
+    public func makeShared() -> Bool {
+        if InjectSettings.container.isNil {
+            InjectSettings.container = self
+            return true
+        }
+        return false
+    }
+
+    /// Unregister shared container. if it's the same instance return `true` otherwise `false`
+    @discardableResult
+    public func razeShared() -> Bool {
+        if InjectSettings.container === self {
+            InjectSettings.container = nil
+            return true
+        }
+        return false
+    }
+
+    /// Unregister shared container. No matter what instance is registered...
+    public static func razeShared() {
+        InjectSettings.container = nil
     }
 
     private func key(_ type: some Any, name: String?) -> String {
@@ -92,61 +113,11 @@ extension Container: Registrator {
 
         return Forwarder(container: self, storage: storage)
     }
-
-    // MARK: - Any
-
-    /// register structs/valueType
-    @discardableResult
-    public func registerAny<T>(_ type: T.Type,
-                               name: String?,
-                               accessLevel: Options.AccessLevel,
-                               entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
-        let key = key(type, name: name)
-
-        if let found = storages[key] {
-            switch found.accessLevel {
-            case .final:
-                assertionFailure("\(type) is already registered with \(key)")
-            case .open:
-                break
-            }
-        }
-
-        let storage: Storage = TransientStorage(accessLevel: .open, generator: entity)
-        storages[key] = storage
-        return Forwarder(container: self, storage: storage)
-    }
-
-    public func registrationOfAny(for type: (some Any).Type,
-                                  name: String?) -> Forwarding {
-        let key = key(type, name: name)
-
-        guard let storage = storages[key] else {
-            fatalError("can't resolve dependency of <\(type)>")
-        }
-
-        return Forwarder(container: self, storage: storage)
-    }
 }
 
 // MARK: - ForwardRegistrator
 
 extension Container: ForwardRegistrator {
-    func registerAny(_ type: (some Any).Type, named: String?, storage: Storage) {
-        let key = key(type, name: named)
-
-        if let found = storages[key] {
-            switch found.accessLevel {
-            case .final:
-                assertionFailure("\(type) is already registered with \(key)")
-            case .open:
-                break
-            }
-        }
-
-        storages[key] = storage
-    }
-
     func register(_ type: (some Any).Type, named: String?, storage: Storage) {
         let key = key(type, name: named)
 
@@ -173,13 +144,6 @@ extension Container: Resolver {
             return resolved
         }
         return nil
-    }
-}
-
-extension Container /* Storyboardable */ {
-    private func makeShared() {
-        assert(InjectSettings.container.isNil, "storyboard handler was registered twice")
-        InjectSettings.container = self
     }
 }
 

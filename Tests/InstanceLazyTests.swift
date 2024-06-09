@@ -5,7 +5,7 @@ import XCTest
 
 final class InstanceLazyTests: XCTestCase {
     private var resolvingCounter: Int = 0
-    private let container: Container = .init(shared: false, assemblies: [])
+    private let container: Container = .init(assemblies: [])
 
     private func setup(_ option: Options) {
         container.register(Instance.self, options: option) {

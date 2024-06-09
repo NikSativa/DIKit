@@ -8,10 +8,10 @@ import UIKit
 
 @testable import DIKit
 
-final class TestContainer {
-    let registered: [RegistrationInfo]
+public final class TestContainer {
+    public let registered: [RegistrationInfo]
 
-    init(assemblies: [Assembly]) {
+    public init(assemblies: [Assembly]) {
         let testRegistrator = TestRegistrator()
         for assemby in assemblies {
             assemby.assemble(with: testRegistrator)
@@ -28,11 +28,7 @@ private final class TestRegistrator {
 // MARK: - ForwardRegistrator
 
 extension TestRegistrator: ForwardRegistrator {
-    func register(_ type: (some Any).Type, named: String?, storage: Storage) {
-        registered.append(.forwardingName(to: type, name: named, accessLevel: storage.accessLevel))
-    }
-
-    func registerAny(_ type: (some Any).Type, named: String?, storage: Storage) {
+    func register<T>(_ type: T.Type, named: String?, storage: Storage) {
         registered.append(.forwardingName(to: type, name: named, accessLevel: storage.accessLevel))
     }
 }
@@ -40,12 +36,15 @@ extension TestRegistrator: ForwardRegistrator {
 // MARK: - Registrator
 
 extension TestRegistrator: Registrator {
-    func registration(for type: (some Any).Type, name: String?) -> DIKit.Forwarding {
+    public func registration<T>(for type: T.Type,
+                                name: String?) -> Forwarding {
         fatalError()
     }
 
     @discardableResult
-    func register<T>(_ type: T.Type, options: Options, entity: @escaping (Resolver, Arguments) -> T) -> Forwarding {
+    public func register<T>(_ type: T.Type,
+                            options: Options,
+                            entity: @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding {
         registered.append(.register(type, options))
         return Forwarder(container: self, storage: TransientStorage(accessLevel: options.accessLevel, generator: entity))
     }

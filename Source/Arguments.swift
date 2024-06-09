@@ -15,33 +15,36 @@ public struct Arguments {
         self.elements = []
     }
 
-    public func optionalResolve<T>(_: T.Type, at index: Int) -> T? {
+    public func optionalResolve<T>(_: T.Type = T.self, at index: Int = 0) -> T? {
         return elements.indices.contains(index) ? elements[index] as? T : nil
     }
 
-    public func optionalResolve<T>(at index: Int) -> T? {
-        optionalResolve(T.self, at: index)
-    }
-
-    public func resolve<T>(_: T.Type, at index: Int) -> T {
-        // swiftlint:disable:next force_cast
-        elements[index] as! T
-    }
-
-    public func resolve<T>(at index: Int) -> T {
-        resolve(T.self, at: index)
+    public func resolve<T>(_ type: T.Type = T.self, at index: Int = 0) -> T {
+        return optionalResolve(type, at: index).unsafelyUnwrapped
     }
 
     public subscript<T>(index: Int) -> T {
-        // swiftlint:disable:next force_cast
-        elements[index] as! T
+        return optionalResolve(T.self, at: index).unsafelyUnwrapped
     }
 
     public func optionalFirst<T>(_: T.Type = T.self) -> T? {
-        elements.lazy.compactMap { $0 as? T }.first
+        for element in elements {
+            if let resolved = element as? T {
+                return resolved
+            }
+        }
+        return nil
     }
 
-    public func first<T>(_ type: T.Type = T.self) -> T {
-        optionalFirst(type)!
+    public func first<T>(_: T.Type = T.self) -> T {
+        return optionalFirst().unsafelyUnwrapped
+    }
+}
+
+// MARK: - ExpressibleByArrayLiteral
+
+extension Arguments: ExpressibleByArrayLiteral {
+    public init(arrayLiteral elements: Any...) {
+        self.init(elements)
     }
 }

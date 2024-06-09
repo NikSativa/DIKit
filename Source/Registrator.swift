@@ -5,7 +5,7 @@ public protocol Registrator {
     @discardableResult
     func register<T>(_ type: T.Type,
                      options: Options,
-                     entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding
+                     entity: @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding
 
     func registration<T>(for type: T.Type,
                          name: String?) -> Forwarding
@@ -13,53 +13,39 @@ public protocol Registrator {
 
 public extension Registrator {
     @discardableResult
-    func register<T>(_ type: T.Type,
-                     entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+    func register<T>(_ type: T.Type = T.self,
+                     options: Options = .default,
+                     entity: @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding {
         return register(type,
-                        options: .default,
+                        options: options,
                         entity: entity)
     }
 
     @discardableResult
-    func register<T>(_ type: T.Type,
-                     entity: @escaping (Resolver) -> T) -> Forwarding {
-        return register(type,
-                        options: .default) { r, _ in
-            return entity(r)
-        }
-    }
-
-    @discardableResult
-    func register<T>(_ type: T.Type,
-                     entity: @escaping () -> T) -> Forwarding {
-        return register(type,
-                        options: .default) { _, _ in
-            return entity()
-        }
-    }
-
-    @discardableResult
-    func register<T>(_ type: T.Type,
+    func register<T>(_ type: T.Type = T.self,
                      options: Options = .default,
-                     entity: @escaping (Resolver) -> T) -> Forwarding {
+                     entity: @escaping (_ resolver: Resolver) -> T) -> Forwarding {
         return register(type,
-                        options: options) { resolver, _ in
-            return entity(resolver)
-        }
+                        options: options,
+                        entity: { resolver, _ in
+                            return entity(resolver)
+                        })
     }
 
     @discardableResult
-    func register<T>(_ type: T.Type,
+    func register<T>(_ type: T.Type = T.self,
                      options: Options = .default,
                      entity: @escaping () -> T) -> Forwarding {
         return register(type,
-                        options: options) { _, _ in
-            return entity()
-        }
+                        options: options,
+                        entity: { _, _ in
+                            return entity()
+                        })
     }
 
-    func registration(for type: (some Any).Type) -> Forwarding {
+    func registration<T>(for type: T.Type = T.self,
+                         name: String? = nil) -> Forwarding {
         return registration(for: type,
-                            name: nil)
+                            name: name)
     }
 }

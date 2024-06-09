@@ -1,36 +1,20 @@
 import Foundation
 import ObjectiveC
 
-public protocol StoryboardSelfInjectable {
-    func resolveDependncies(with resolver: Resolver)
-}
-
 public protocol SelfInjectable {
-    func isDependenciesInitializationNeeded() -> Bool
-    func resolveDependencies()
-}
-
-public extension SelfInjectable {
-    func resolveDependencies() {
-        if isDependenciesInitializationNeeded(),
-           let container = InjectSettings.container {
-            if let storyboardable = self as? StoryboardSelfInjectable {
-                storyboardable.resolveDependncies(with: container)
-            }
-        }
-    }
+    func resolveDependncies(with resolver: Resolver)
 }
 
 // MARK: - NSObject + SelfInjectable
 
-extension NSObject: SelfInjectable {
+extension NSObject {
     private enum AssociatedKeys {
         static let initialization: StaticString = "DIKit.isInitializedFromDI"
         static let dipTag: StaticString = "DIKit.dipTag"
     }
 
     @objc
-    internal var isInitializedFromDI: Bool {
+    private var isInitializedFromDI: Bool {
         get {
             return withUnsafePointer(to: AssociatedKeys.initialization) { key in
                 var key = key
@@ -46,7 +30,7 @@ extension NSObject: SelfInjectable {
     }
 
     @objc
-    internal private(set) var dipTag: String? {
+    private(set) var dipTag: String? {
         get {
             withUnsafePointer(to: AssociatedKeys.dipTag) { key in
                 var key = key
@@ -58,14 +42,24 @@ extension NSObject: SelfInjectable {
                 var key = key
                 objc_setAssociatedObject(self, &key, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             }
-            resolveDependencies()
+
+            if let container = InjectSettings.container {
+                resolveDependnciesIfNeeded(with: container)
+            }
         }
     }
 
-    public func isDependenciesInitializationNeeded() -> Bool {
+    private func isDependenciesInitializationNeeded() -> Bool {
         defer {
             isInitializedFromDI = true
         }
         return !isInitializedFromDI
+    }
+
+    public func resolveDependnciesIfNeeded(with resolver: Resolver) {
+        if isDependenciesInitializationNeeded(),
+           let selfInjectable = self as? SelfInjectable {
+            selfInjectable.resolveDependncies(with: resolver)
+        }
     }
 }

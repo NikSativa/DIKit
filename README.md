@@ -9,13 +9,59 @@ Swift library that allows you to use a dependency injection pattern in your proj
 Most recommended way to create a container is to use assemblies. Assemblies are classes that conform to `Assembly` protocol and are responsible for registering dependencies in the container.
  
 ```swift
-Container(shared: true,
-          assemblies: [
-              FoundationAssembly(),
-              APIAssembli(),
-              DataBaseAssembly(),
-              ThemeAssembly()
-          ])
+Container(assemblies: [
+    FoundationAssembly(),
+    APIAssembli(),
+    DataBaseAssembly(),
+    ThemeAssembly()
+])
+```
+
+## SwiftUI 
+
+If you want to use DIKit in SwiftUI you can create a container in the `App` struct like this:
+
+```swift
+@main
+struct MyApp: App {
+    let container = Container(assemblies: [...])
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environmentObject(container.toObservable())
+        }
+    }
+}
+
+// somewhere in the code
+struct ContentView: View {
+    @EnvironmentLazy var api: API
+    
+    var body: some View {
+        Button("Make request") {
+            api.request()
+        }
+    }
+}
+```
+
+## Shared container
+
+If you want to use the container in property wrappers (InjectLazy, InjectProvider..) you can create a shared container like this:
+
+```swift
+let container = Container(assemblies: [...])
+container.makeShared()  // <-- make container shared
+
+// somewhere in the code
+final class SomeManager {
+    @InjectLazy var api: API
+    
+    func makeRequest() {
+        api.request()
+    }
+}
 ```
 
 ## Create assembly

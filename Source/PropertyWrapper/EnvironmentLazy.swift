@@ -1,5 +1,4 @@
 #if canImport(SwiftUI)
-
 import Foundation
 import SwiftUI
 
@@ -29,8 +28,7 @@ public struct EnvironmentLazy<Value>: DynamicProperty {
     }
 }
 
-private final class Holder<Value> {
+private final class Holder<Value>: ObservableObject {
     var instance: Value?
 }
-
 #endif

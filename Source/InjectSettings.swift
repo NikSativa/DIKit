@@ -1,9 +1,9 @@
 import Foundation
 
 public enum InjectSettings {
-    internal static var container: Container? {
+    public internal(set) static var container: Container? {
         didSet {
-            assert(oldValue == nil)
+            assert(oldValue == nil, "Container is already registered")
         }
     }
 

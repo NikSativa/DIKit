@@ -1,5 +1,4 @@
 #if canImport(SwiftUI)
-
 import Foundation
 import SwiftUI
 
@@ -21,5 +20,4 @@ public struct EnvironmentProvider<Value>: DynamicProperty {
         self.arguments = arguments
     }
 }
-
 #endif

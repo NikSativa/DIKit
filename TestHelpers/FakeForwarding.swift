@@ -2,33 +2,19 @@ import DIKit
 import Foundation
 import SpryKit
 
-final class FakeForwarding: Forwarding, Spryable {
-    enum ClassFunction: String, StringRepresentable {
+public final class FakeForwarding: Forwarding, Spryable {
+    public enum ClassFunction: String, StringRepresentable {
         case empty
     }
 
-    enum Function: String, StringRepresentable {
-        case implements = "implements(_:)"
-        case implementsNamed = "implements(_:named:)"
-        case implementsAccessLevel = "implements(_:accessLevel:)"
+    public enum Function: String, StringRepresentable {
         case implementsNamedAccessLevel = "implements(_:named:accessLevel:)"
     }
 
-    init() {}
+    public init() {}
 
-    func implements(_ type: (some Any).Type) -> Self {
-        return spryify(arguments: type)
-    }
-
-    func implements(_ type: (some Any).Type, named: String) -> Self {
-        return spryify(arguments: type, named)
-    }
-
-    func implements(_ type: (some Any).Type, accessLevel: Options.AccessLevel?) -> Self {
-        return spryify(arguments: type, accessLevel)
-    }
-
-    func implements(_ type: (some Any).Type, named: String?, accessLevel: Options.AccessLevel?) -> Self {
+    @discardableResult
+    public func implements<T>(_ type: T.Type = T.self, named: String? = nil, accessLevel: Options.AccessLevel? = nil) -> Self {
         return spryify(arguments: type, named, accessLevel)
     }
 }

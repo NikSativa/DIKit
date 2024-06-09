@@ -9,7 +9,10 @@ public struct InjectWrapped<Value: InstanceWrapper> {
     }
 
     public init(named: String? = nil, with arguments: Arguments = .init()) {
-        assert(InjectSettings.resolver != nil)
-        self.wrappedValue = InjectSettings.resolver!.resolveWrapped(named: named, with: arguments)
+        guard let resolver = InjectSettings.resolver else {
+            fatalError("Container is not shared")
+        }
+
+        self.wrappedValue = resolver.resolveWrapped(named: named, with: arguments)
     }
 }
