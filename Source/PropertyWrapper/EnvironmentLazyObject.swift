@@ -8,13 +8,7 @@ public struct EnvironmentLazyObject<Value: ObservableObject>: DynamicProperty {
     @ObservedObject private var holder: Holder<Value> = .init()
 
     public var wrappedValue: Value {
-        if let instance = holder.instance {
-            return instance
-        }
-
-        let instance: Value = container.resolve(named: name, with: arguments)
-        holder.instance = instance
-        return instance
+        return resolveInstance()
     }
 
     private let name: String?
@@ -27,8 +21,19 @@ public struct EnvironmentLazyObject<Value: ObservableObject>: DynamicProperty {
     }
 
     public var projectedValue: Binding<Value> {
-        assert(holder.instance != nil, "`projectedValue` is not available while the `wrappedValue` is not initialized. Should never happen.")
+        resolveInstance()
         return $holder.instance
+    }
+
+    @discardableResult
+    private func resolveInstance() -> Value {
+        if let instance = holder.instance {
+            return instance
+        }
+
+        let instance: Value = container.resolve(named: name, with: arguments)
+        holder.instance = instance
+        return instance
     }
 }
 
