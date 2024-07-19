@@ -5,7 +5,7 @@ import SwiftUI
 @propertyWrapper
 public struct EnvironmentLazyObject<Value: ObservableObject>: DynamicProperty {
     @EnvironmentObject private var container: ObservableResolver
-    @ObservedObject private var holder: Holder<Value> = .init()
+    @StateObject private var holder: Holder<Value> = .init()
 
     public var wrappedValue: Value {
         return resolveInstance()

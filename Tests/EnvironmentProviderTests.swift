@@ -4,7 +4,7 @@ import SpryKit
 import SwiftUI
 import XCTest
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, tvOS 16.0, watchOS 9.0, *)
 final class EnvironmentProviderTests: XCTestCase {
     private var resolvingCounter: Int = 0
     private let container: Container = .init(assemblies: [])
@@ -29,18 +29,18 @@ final class EnvironmentProviderTests: XCTestCase {
         var appView: (some View)? = makeAppView()
         XCTAssertEqual(resolvingCounter, 0)
 
-        let capture = ImageRenderer(content: appView).uiImage
+        let capture = ImageRenderer(content: appView).actualImage
         XCTAssertNotNil(capture)
         XCTAssertEqual(resolvingCounter, 1)
 
-        let capture2 = ImageRenderer(content: appView).uiImage
+        let capture2 = ImageRenderer(content: appView).actualImage
         XCTAssertNotNil(capture2)
         XCTAssertEqual(resolvingCounter, 2)
 
         appView = nil
         let appView2 = makeAppView()
 
-        let capture3 = ImageRenderer(content: appView2).uiImage
+        let capture3 = ImageRenderer(content: appView2).actualImage
         XCTAssertNotNil(capture3)
         XCTAssertEqual(resolvingCounter, 3)
     }
@@ -52,18 +52,18 @@ final class EnvironmentProviderTests: XCTestCase {
         var appView: (some View)? = makeAppView()
         XCTAssertEqual(resolvingCounter, 0)
 
-        let capture = ImageRenderer(content: appView).uiImage
+        let capture = ImageRenderer(content: appView).actualImage
         XCTAssertNotNil(capture)
         XCTAssertEqual(resolvingCounter, 1)
 
-        let capture2 = ImageRenderer(content: appView).uiImage
+        let capture2 = ImageRenderer(content: appView).actualImage
         XCTAssertNotNil(capture2)
         XCTAssertEqual(resolvingCounter, 2)
 
         appView = nil
         let appView2 = makeAppView()
 
-        let capture3 = ImageRenderer(content: appView2).uiImage
+        let capture3 = ImageRenderer(content: appView2).actualImage
         XCTAssertNotNil(capture3)
         XCTAssertEqual(resolvingCounter, 3)
     }
@@ -75,18 +75,18 @@ final class EnvironmentProviderTests: XCTestCase {
         var appView: (some View)? = makeAppView()
         XCTAssertEqual(resolvingCounter, 0)
 
-        let capture = ImageRenderer(content: appView).uiImage
+        let capture = ImageRenderer(content: appView).actualImage
         XCTAssertNotNil(capture)
         XCTAssertEqual(resolvingCounter, 1)
 
-        let capture2 = ImageRenderer(content: appView).uiImage
+        let capture2 = ImageRenderer(content: appView).actualImage
         XCTAssertNotNil(capture2)
         XCTAssertEqual(resolvingCounter, 1)
 
         appView = nil
         let appView2 = makeAppView()
 
-        let capture3 = ImageRenderer(content: appView2).uiImage
+        let capture3 = ImageRenderer(content: appView2).actualImage
         XCTAssertNotNil(capture3)
         XCTAssertEqual(resolvingCounter, 1)
     }
