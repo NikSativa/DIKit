@@ -1,11 +1,6 @@
+import DIKit
 import Foundation
 import SpryKit
-
-#if os(iOS)
-import UIKit
-#endif
-
-import DIKit
 
 public final class FakeRegistrator: Registrator, Spryable {
     public enum ClassFunction: String, StringRepresentable {

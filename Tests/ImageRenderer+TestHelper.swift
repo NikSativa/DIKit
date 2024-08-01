@@ -1,3 +1,4 @@
+#if canImport(SwiftUI)
 import Foundation
 import SpryKit
 import SwiftUI
@@ -12,3 +13,4 @@ extension ImageRenderer {
         #endif
     }
 }
+#endif

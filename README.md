@@ -36,7 +36,7 @@ struct MyApp: App {
 
 // somewhere in the code
 struct ContentView: View {
-    @EnvironmentLazy var api: API
+    @DIObservedObject var api: API
     
     var body: some View {
         Button("Make request") {
@@ -114,8 +114,9 @@ or if container is shared you can use:
 ```
 of SwiftUI:
 ```swift
-@EnvironmentLazy var api: API
-@EnvironmentProvider var dataBase: DataBase
+@DIObservedObject var api: API
+@DIStateObject var viewState: ReCreatedState
+@DIProvider var dataBase: DataBase
 ```
 
 ## Registration
