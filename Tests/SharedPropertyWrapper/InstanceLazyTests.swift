@@ -1,33 +1,31 @@
 import DIKit
 import Foundation
-import SpryKit
 import XCTest
 
-final class InstanceProviderTests: XCTestCase {
-    typealias T = Instance
+final class InstanceLazyTests: XCTestCase {
     private var resolvingCounter: Int = 0
     private let container: Container = .init(assemblies: [])
 
-    private func setup(_ options: Options) {
-        container.register(T.self, options: options) {
+    private func setup(_ option: Options) {
+        container.register(Instance.self, options: option) {
             defer {
                 self.resolvingCounter += 1
             }
-            return T(id: self.resolvingCounter)
+            return Instance(id: self.resolvingCounter)
         }
     }
 
     func test_when_registered_weak() {
         setup(.weak)
 
-        var subject: Provider<T> = container.resolveWrapped()
+        var subject: Lazy<Instance> = container.resolveWrapped()
         XCTAssertEqual(resolvingCounter, 0)
 
-        var i1: T? = subject.instance
+        var i1: Instance? = subject.instance
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i1)
 
-        var i2: T? = subject.instance
+        var i2: Instance? = subject.instance
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i2)
         XCTAssertEqual(i1, i2)
@@ -39,7 +37,7 @@ final class InstanceProviderTests: XCTestCase {
         subject = container.resolveWrapped()
 
         i1 = subject.instance
-        XCTAssertEqual(resolvingCounter, 2)
+        XCTAssertEqual(resolvingCounter, 2) // retained by wrapper
         XCTAssertNotNil(i1)
 
         i2 = subject.instance
@@ -51,17 +49,17 @@ final class InstanceProviderTests: XCTestCase {
     func test_when_registered_transient() {
         setup(.transient)
 
-        var subject: Provider<T> = container.resolveWrapped()
+        var subject: Lazy<Instance> = container.resolveWrapped()
         XCTAssertEqual(resolvingCounter, 0)
 
-        var i1: T? = subject.instance
+        var i1: Instance? = subject.instance
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i1)
 
-        var i2: T? = subject.instance
-        XCTAssertEqual(resolvingCounter, 2)
+        var i2: Instance? = subject.instance
+        XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i2)
-        XCTAssertNotEqual(i1, i2)
+        XCTAssertEqual(i1, i2)
 
         // release prev instance
         i1 = nil
@@ -70,26 +68,26 @@ final class InstanceProviderTests: XCTestCase {
         subject = container.resolveWrapped()
 
         i1 = subject.instance
-        XCTAssertEqual(resolvingCounter, 3)
+        XCTAssertEqual(resolvingCounter, 2) // retained by wrapper
         XCTAssertNotNil(i1)
 
         i2 = subject.instance
-        XCTAssertEqual(resolvingCounter, 4)
+        XCTAssertEqual(resolvingCounter, 2)
         XCTAssertNotNil(i2)
-        XCTAssertNotEqual(i1, i2)
+        XCTAssertEqual(i1, i2)
     }
 
     func test_when_registered_container() {
         setup(.container)
 
-        var subject: Provider<T> = container.resolveWrapped()
+        var subject: Lazy<Instance> = container.resolveWrapped()
         XCTAssertEqual(resolvingCounter, 0)
 
-        var i1: T? = subject.instance
+        var i1: Instance? = subject.instance
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i1)
 
-        var i2: T? = subject.instance
+        var i2: Instance? = subject.instance
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i2)
         XCTAssertEqual(i1, i2)

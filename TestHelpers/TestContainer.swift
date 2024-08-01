@@ -1,10 +1,5 @@
 import DIKit
 import Foundation
-import SpryKit
-
-#if os(iOS)
-import UIKit
-#endif
 
 @testable import DIKit
 

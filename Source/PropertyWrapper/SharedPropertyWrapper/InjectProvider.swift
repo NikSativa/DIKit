@@ -1,8 +1,7 @@
 import Foundation
 
 @propertyWrapper
-public struct InjectLazy<Value> {
-    public let projectedValue: Lazy<Value>
+public struct InjectProvider<Value> {
     public private(set) var wrappedValue: Value {
         get {
             return projectedValue.instance
@@ -12,7 +11,9 @@ public struct InjectLazy<Value> {
         }
     }
 
-    public init(named: String? = nil, with arguments: Arguments = .init()) {
+    public let projectedValue: Provider<Value>
+
+    public init(named: String? = nil, with arguments: Arguments? = nil) {
         guard let resolver = InjectSettings.resolver else {
             fatalError("Container is not shared")
         }

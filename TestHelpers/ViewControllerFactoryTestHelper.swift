@@ -1,7 +1,7 @@
-#if os(iOS)
+#if os(iOS) && canImport(UIKit)
 import Foundation
-import SpryKit
 import UIKit
+
 @testable import DIKit
 
 public enum ViewControllerFactoryTestHelper {

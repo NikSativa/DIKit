@@ -1,6 +1,5 @@
+import DIKit
 import Foundation
-import SpryKit
-@testable import DIKit
 
 public enum RegistrationInfo {
     case register(Any.Type, Options)

@@ -3,21 +3,21 @@ import Combine
 import SwiftUI
 
 @propertyWrapper
-public struct EnvironmentLazyObject<Value: ObservableObject>: DynamicProperty {
-    @EnvironmentObject private var container: ObservableResolver
-    @StateObject private var holder: Holder<Value> = .init()
+public struct DIStateObject<Value: ObservableObject>: DynamicProperty {
+    @EnvironmentObject
+    private var container: ObservableResolver
+    @StateObject
+    private var holder: InstanceHolder<Value> = .init()
+    private let parametersHolder: EnvParametersHolder = .init()
 
     public var wrappedValue: Value {
         return resolveInstance()
     }
 
-    private let name: String?
-    private let arguments: Arguments
-
     public init(named name: String? = nil,
-                with arguments: Arguments = .init()) {
-        self.name = name
-        self.arguments = arguments
+                with arguments: Arguments? = nil) {
+        parametersHolder.name = name
+        parametersHolder.arguments = arguments
     }
 
     public var projectedValue: Binding<Value> {
@@ -31,13 +31,14 @@ public struct EnvironmentLazyObject<Value: ObservableObject>: DynamicProperty {
             return instance
         }
 
-        let instance: Value = container.resolve(named: name, with: arguments)
+        let instance: Value = container.resolve(named: parametersHolder.name, with: parametersHolder.arguments)
         holder.instance = instance
+        parametersHolder.cleanup()
         return instance
     }
 }
 
-private final class Holder<Value: ObservableObject>: ObservableObject {
+private final class InstanceHolder<Value: ObservableObject>: ObservableObject {
     private var observers: Set<AnyCancellable> = []
 
     var instance: Value! {

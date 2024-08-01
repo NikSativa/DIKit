@@ -8,7 +8,7 @@ public struct InjectWrapped<Value: InstanceWrapper> {
         }
     }
 
-    public init(named: String? = nil, with arguments: Arguments = .init()) {
+    public init(named: String? = nil, with arguments: Arguments? = nil) {
         guard let resolver = InjectSettings.resolver else {
             fatalError("Container is not shared")
         }

@@ -19,11 +19,11 @@ public final class FakeResolver: Resolver, Spryable {
         return spryify(arguments: type, named, arguments)
     }
 
-    public func resolve<T>(_ type: T.Type = T.self, named: String? = nil, with arguments: Arguments = .init()) -> T {
+    public func resolve<T>(_ type: T.Type = T.self, named: String? = nil, with arguments: Arguments? = nil) -> T {
         return spryify(arguments: type, named, arguments)
     }
 
-    public func resolveWrapped<W: InstanceWrapper, T>(_ type: T.Type = T.self, named: String? = nil, with arguments: Arguments = .init()) -> W
+    public func resolveWrapped<W: InstanceWrapper, T>(_ type: T.Type = T.self, named: String? = nil, with arguments: Arguments? = nil) -> W
     where W.Wrapped == T {
         return spryify(arguments: type, named, arguments)
     }

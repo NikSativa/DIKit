@@ -1,4 +1,4 @@
-#if os(iOS)
+#if os(iOS) && canImport(UIKit)
 import DIKit
 import Foundation
 import SpryKit
