@@ -9,12 +9,6 @@ public final class Container {
         for assembly in allAssemblies {
             assembly.assemble(with: self)
         }
-
-        #if os(iOS)
-        register(ViewControllerFactory.self, options: .transient) { resolver, _ in
-            Impl.ViewControllerFactory(resolver: resolver)
-        }
-        #endif
     }
 
     public convenience init(assemblies: Assembly...) {
@@ -26,6 +20,14 @@ public final class Container {
             InjectSettings.container = nil
         }
     }
+
+    #if os(iOS) && canImport(UIKit)
+    public func registerViewControllerFactory() {
+        register(ViewControllerFactory.self, options: .transient) { resolver, _ in
+            Impl.ViewControllerFactory(resolver: resolver)
+        }
+    }
+    #endif
 
     /// Register shared container. Return `true` when correctly registered, otherwise `false`
     /// Manually access to shared container is not recommended, but it's possible `InjectSettings.container`

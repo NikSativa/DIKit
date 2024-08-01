@@ -39,9 +39,45 @@ public struct Arguments {
     public func first<T>(_: T.Type = T.self) -> T {
         return optionalFirst().unsafelyUnwrapped
     }
+
+    public var count: Int {
+        return elements.count
+    }
+
+    public var isEmpty: Bool {
+        return elements.isEmpty
+    }
 }
 
-// MARK: - ExpressibleByArrayLiteral
+// MARK: - Sequence
+
+extension Arguments: Sequence {
+    public func makeIterator() -> some IteratorProtocol {
+        return ArgumentsIterator(self)
+    }
+}
+
+private final class ArgumentsIterator: IteratorProtocol {
+    let args: Arguments
+    var idx = 0
+
+    init(_ args: Arguments) {
+        self.args = args
+    }
+
+    func next() -> Int? {
+        guard idx < 0 || idx >= args.count else {
+            return nil
+        }
+
+        defer {
+            idx += 1
+        }
+        return args[idx]
+    }
+}
+
+// MARK: - Arguments + ExpressibleByArrayLiteral
 
 extension Arguments: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: Any...) {
