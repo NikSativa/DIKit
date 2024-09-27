@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:6.0
 // swiftformat:disable all
 import PackageDescription
 
@@ -6,18 +6,17 @@ let package = Package(
     name: "DIKit",
     platforms: [
         .iOS(.v14),
-        .macOS(.v11),
+        .macOS(.v13),
         .macCatalyst(.v14),
         .visionOS(.v1),
         .tvOS(.v14),
         .watchOS(.v7)
     ],
     products: [
-        .library(name: "DIKit", targets: ["DIKit"]),
-        .library(name: "DIKitTestHelpers", targets: ["DIKitTestHelpers"])
+        .library(name: "DIKit", targets: ["DIKit"])
     ],
     dependencies: [
-        .package(url: "https://github.com/NikSativa/SpryKit.git", .upToNextMajor(from: "2.2.3"))
+        .package(url: "https://github.com/NikSativa/SpryKit.git", .upToNextMajor(from: "2.3.9"))
     ],
     targets: [
         .target(name: "DIKit",
@@ -25,23 +24,19 @@ let package = Package(
                 ],
                 path: "Source",
                 resources: [
-                    .copy("../PrivacyInfo.xcprivacy")
-                ]),
-        .target(name: "DIKitTestHelpers",
-                dependencies: [
-                    "DIKit",
-                    "SpryKit"
+                    .process("PrivacyInfo.xcprivacy")
                 ],
-                path: "TestHelpers",
-                resources: [
-                    .copy("../PrivacyInfo.xcprivacy")
+                swiftSettings: [
+                    .define("supportsVisionOS", .when(platforms: [.visionOS])),
                 ]),
         .testTarget(name: "DIKitTests",
                     dependencies: [
                         "DIKit",
-                        "DIKitTestHelpers",
                         "SpryKit",
                     ],
-                    path: "Tests")
+                    path: "Tests",
+                    swiftSettings: [
+                        .define("supportsVisionOS", .when(platforms: [.visionOS])),
+                    ])
     ]
 )

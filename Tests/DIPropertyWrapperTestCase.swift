@@ -18,7 +18,7 @@ class DIPropertyWrapperTestCase<AppView: DIPropertyWrapperView>: XCTestCase {
     func run_test(options: Options,
                   resolvingCounterByStep expectedResolvingCounter: [Int],
                   argsShouldBeDeallocatedAfterFirstResolve argsShouldBeDeallocated: Bool,
-                  file: StaticString = #file,
+                  file: StaticString = #filePath,
                   line: UInt = #line) {
         setup(options)
 

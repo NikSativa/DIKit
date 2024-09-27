@@ -1,4 +1,4 @@
-// swift-tools-version:5.8
+// swift-tools-version:5.9
 // swiftformat:disable all
 import PackageDescription
 
@@ -8,6 +8,7 @@ let package = Package(
         .iOS(.v14),
         .macOS(.v13),
         .macCatalyst(.v14),
+        .visionOS(.v1),
         .tvOS(.v14),
         .watchOS(.v7)
     ],
@@ -24,12 +25,18 @@ let package = Package(
                 path: "Source",
                 resources: [
                     .process("PrivacyInfo.xcprivacy")
+                ],
+                swiftSettings: [
+                    .define("supportsVisionOS", .when(platforms: [.visionOS])),
                 ]),
         .testTarget(name: "DIKitTests",
                     dependencies: [
                         "DIKit",
                         "SpryKit",
                     ],
-                    path: "Tests")
+                    path: "Tests",
+                    swiftSettings: [
+                        .define("supportsVisionOS", .when(platforms: [.visionOS])),
+                    ])
     ]
 )

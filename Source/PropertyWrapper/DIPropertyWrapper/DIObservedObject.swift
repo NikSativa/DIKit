@@ -2,7 +2,7 @@
 import Combine
 import SwiftUI
 
-@propertyWrapper
+@MainActor @propertyWrapper
 public struct DIObservedObject<Value: ObservableObject>: DynamicProperty {
     @EnvironmentObject
     private var container: ObservableResolver
