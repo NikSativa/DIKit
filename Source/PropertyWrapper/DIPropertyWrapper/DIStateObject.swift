@@ -2,7 +2,7 @@
 import Combine
 import SwiftUI
 
-@propertyWrapper
+@MainActor @propertyWrapper
 public struct DIStateObject<Value: ObservableObject>: DynamicProperty {
     @EnvironmentObject
     private var container: ObservableResolver

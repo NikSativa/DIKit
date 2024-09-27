@@ -7,7 +7,7 @@ public struct DIProviderOptions {
     public let arguments: Arguments?
 }
 
-@propertyWrapper
+@MainActor @propertyWrapper
 public struct DIProvider<Value>: DynamicProperty {
     @EnvironmentObject
     private var container: ObservableResolver

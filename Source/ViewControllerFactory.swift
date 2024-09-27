@@ -3,18 +3,22 @@ import Foundation
 import UIKit
 
 public protocol ViewControllerFactory {
+    @MainActor
     func instantiate<T>(from nibName: String?, bundle: Bundle?) -> T
         where T: UIViewController
 
+    @MainActor
     func createNavigationController<T, N>(from nibName: String?, bundle: Bundle?) -> (navigation: N, root: T)
         where T: UIViewController, N: UINavigationController
 }
 
 public extension ViewControllerFactory {
+    @MainActor
     func instantiate<T: UIViewController>(_: T.Type = T.self, from nibName: String? = nil, bundle: Bundle? = nil) -> T {
         return instantiate(from: nibName, bundle: bundle)
     }
 
+    @MainActor
     func createNavigationController<T, N>(_: T.Type = T.self,
                                           navigation: N.Type = UINavigationController.self,
                                           from nibName: String? = nil,
@@ -32,6 +36,7 @@ extension Impl {
             self.resolver = resolver
         }
 
+        @MainActor
         private func instantiateInitialViewController<T: UIViewController>(from storyboard: UIStoryboard) -> T {
             if #available(iOS 13.0, *),
                let controller = storyboard.instantiateInitialViewController(creator: { T(coder: $0) }) {
@@ -43,6 +48,7 @@ extension Impl {
 }
 
 extension Impl.ViewControllerFactory: ViewControllerFactory {
+    @MainActor
     func instantiate<T: UIViewController>(from nibName: String? = nil, bundle: Bundle? = nil) -> T {
         let klass: String = nibName ?? String(describing: T.self)
         let storyboard = UIStoryboard(name: klass, bundle: bundle)
@@ -52,6 +58,7 @@ extension Impl.ViewControllerFactory: ViewControllerFactory {
         return controller
     }
 
+    @MainActor
     func createNavigationController<T, N>(from nibName: String? = nil, bundle: Bundle? = nil) -> (navigation: N, root: T)
     where T: UIViewController, N: UINavigationController {
         let root: T = instantiate(from: nibName, bundle: bundle)

@@ -51,3 +51,9 @@ public func +(lhs: Options, rhs: Options.AccessLevel) -> Options {
 public func +(lhs: Options, rhs: String) -> Options {
     return .init(accessLevel: lhs.accessLevel, entityKind: lhs.entityKind, name: rhs)
 }
+
+#if swift(>=6.0)
+extension Options: Sendable {}
+extension Options.AccessLevel: Sendable {}
+extension Options.EntityKind: Sendable {}
+#endif
