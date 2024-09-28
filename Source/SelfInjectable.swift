@@ -1,3 +1,4 @@
+#if canImport(ObjectiveC)
 import Foundation
 import ObjectiveC
 
@@ -32,7 +33,7 @@ extension NSObject {
     @objc
     private(set) var dipTag: String? {
         get {
-            withUnsafePointer(to: AssociatedKeys.dipTag) { key in
+            return withUnsafePointer(to: AssociatedKeys.dipTag) { key in
                 var key = key
                 return objc_getAssociatedObject(self, &key) as? String
             }
@@ -63,3 +64,4 @@ extension NSObject {
         }
     }
 }
+#endif

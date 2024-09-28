@@ -54,7 +54,9 @@ extension Impl.ViewControllerFactory: ViewControllerFactory {
         let storyboard = UIStoryboard(name: klass, bundle: bundle)
 
         let controller: T = instantiateInitialViewController(from: storyboard)
+        #if canImport(ObjectiveC)
         controller.resolveDependnciesIfNeeded(with: resolver)
+        #endif
         return controller
     }
 

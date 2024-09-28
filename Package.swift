@@ -20,8 +20,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "DIKit",
-                dependencies: [
-                ],
+                dependencies: [],
                 path: "Source",
                 resources: [
                     .process("PrivacyInfo.xcprivacy")
