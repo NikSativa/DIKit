@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 public protocol Forwarding {
     @discardableResult
     func implements<T>(_ type: T.Type, named: String?, accessLevel: Options.AccessLevel?) -> Self
@@ -12,14 +13,17 @@ public extension Forwarding {
     }
 }
 
+@MainActor
 protocol ForwardRegistrator: AnyObject {
     func register<T>(_ type: T.Type, named: String?, storage: Storage)
 }
 
+@MainActor
 struct Forwarder: Forwarding {
     private unowned let container: ForwardRegistrator
     private let storage: Storage
 
+    @MainActor
     init(container: ForwardRegistrator,
          storage: Storage) {
         self.container = container

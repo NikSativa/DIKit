@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 public final class ObservableResolver: Resolver, ObservableObject {
     private let original: Resolver
 

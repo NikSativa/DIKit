@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 @propertyWrapper
 public struct Inject<Value> {
     public private(set) var wrappedValue: Value {

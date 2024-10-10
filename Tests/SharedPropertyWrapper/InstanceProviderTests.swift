@@ -2,6 +2,7 @@ import DIKit
 import Foundation
 import XCTest
 
+@MainActor
 final class InstanceProviderTests: XCTestCase {
     typealias T = Instance
     private var resolvingCounter: Int = 0

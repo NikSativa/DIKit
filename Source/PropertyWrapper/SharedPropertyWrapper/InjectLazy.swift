@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 @propertyWrapper
 public struct InjectLazy<Value> {
     public private(set) var wrappedValue: Value {

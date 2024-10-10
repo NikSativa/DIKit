@@ -1,7 +1,8 @@
 import Foundation
 
+@MainActor
 public final class Provider<Wrapped>: InstanceWrapper {
-    private let factory: Provider.Factory
+    private let factory: () -> Wrapped
 
     public var instance: Wrapped {
         return factory()
