@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 final class ForwardingStorage: Storage {
     let accessLevel: Options.AccessLevel
     private let storage: Storage

@@ -2,12 +2,14 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 public struct DIProviderOptions {
     public let name: String?
     public let arguments: Arguments?
 }
 
-@MainActor @propertyWrapper
+@MainActor
+@propertyWrapper
 public struct DIProvider<Value>: DynamicProperty {
     @EnvironmentObject
     private var container: ObservableResolver

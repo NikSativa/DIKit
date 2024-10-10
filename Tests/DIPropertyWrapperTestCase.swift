@@ -4,10 +4,12 @@ import Foundation
 import SwiftUI
 import XCTest
 
+@MainActor
 protocol DIPropertyWrapperView: View {
     init(args: Instance?)
 }
 
+@MainActor
 @available(iOS 16.0, tvOS 16.0, watchOS 9.0, *)
 class DIPropertyWrapperTestCase<AppView: DIPropertyWrapperView>: XCTestCase {
     private var resolvingCounter: Int = 0
