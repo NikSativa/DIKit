@@ -1,21 +1,23 @@
 import Foundation
 
+@MainActor
 public protocol Registrator {
     /// register classes
     @discardableResult
     func register<T>(_ type: T.Type,
                      options: Options,
-                     entity: @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding
+                     entity: @MainActor @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding
 
     func registration<T>(for type: T.Type,
                          name: String?) -> Forwarding
 }
 
+@MainActor
 public extension Registrator {
     @discardableResult
     func register<T>(_ type: T.Type = T.self,
                      options: Options = .default,
-                     entity: @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+                     entity: @MainActor @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding {
         return register(type,
                         options: options,
                         entity: entity)
@@ -24,7 +26,7 @@ public extension Registrator {
     @discardableResult
     func register<T>(_ type: T.Type = T.self,
                      options: Options = .default,
-                     entity: @escaping (_ resolver: Resolver) -> T) -> Forwarding {
+                     entity: @MainActor @escaping (_ resolver: Resolver) -> T) -> Forwarding {
         return register(type,
                         options: options,
                         entity: { resolver, _ in
@@ -35,7 +37,7 @@ public extension Registrator {
     @discardableResult
     func register<T>(_ type: T.Type = T.self,
                      options: Options = .default,
-                     entity: @escaping () -> T) -> Forwarding {
+                     entity: @MainActor @escaping () -> T) -> Forwarding {
         return register(type,
                         options: options,
                         entity: { _, _ in

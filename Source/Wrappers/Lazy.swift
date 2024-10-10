@@ -1,15 +1,17 @@
 import Foundation
 
+@MainActor
 public final class Lazy<Wrapped>: InstanceWrapper {
-    private var factory: Lazy.Factory?
+    private var factory: (() -> Wrapped)!
 
+    @MainActor
     public private(set) lazy var instance: Wrapped = {
-        defer {
-            factory = nil
-        }
-        return factory!()
+        let value = factory()
+        factory = nil
+        return value
     }()
 
+    @MainActor
     public init(with factory: @escaping () -> Wrapped) {
         self.factory = factory
     }

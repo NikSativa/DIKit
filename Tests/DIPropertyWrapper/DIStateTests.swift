@@ -3,6 +3,7 @@ import DIKit
 import Foundation
 import SwiftUI
 
+@MainActor
 @available(iOS 16.0, tvOS 16.0, watchOS 9.0, *)
 final class DIStateTests: DIPropertyWrapperTestCase<DIStateView> {
     @MainActor

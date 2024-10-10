@@ -1,8 +1,9 @@
 import Foundation
 
+@MainActor
 public protocol InstanceWrapper {
     associatedtype Wrapped
 
-    typealias Factory = () -> Wrapped
-    init(with factory: @escaping Factory)
+    @MainActor
+    init(with factory: @escaping () -> Wrapped)
 }

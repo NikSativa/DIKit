@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 public protocol Resolver {
     func optionalResolve<T>(_ type: T.Type, named: String?, with arguments: Arguments) -> T?
     func resolve<T>(_ type: T.Type, named: String?, with arguments: Arguments?) -> T

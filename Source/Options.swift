@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 public struct Options: Equatable {
     public enum AccessLevel: Equatable {
         case final
@@ -31,6 +32,7 @@ public struct Options: Equatable {
     public let entityKind: EntityKind
     public let name: String?
 
+    @MainActor
     public init(accessLevel: AccessLevel = .final,
                 entityKind: EntityKind = .weak,
                 name: String? = nil) {
@@ -40,14 +42,17 @@ public struct Options: Equatable {
     }
 }
 
+@MainActor
 public func +(lhs: Options, rhs: Options.EntityKind) -> Options {
     return .init(accessLevel: lhs.accessLevel, entityKind: rhs, name: lhs.name)
 }
 
+@MainActor
 public func +(lhs: Options, rhs: Options.AccessLevel) -> Options {
     return .init(accessLevel: rhs, entityKind: lhs.entityKind, name: lhs.name)
 }
 
+@MainActor
 public func +(lhs: Options, rhs: String) -> Options {
     return .init(accessLevel: lhs.accessLevel, entityKind: lhs.entityKind, name: rhs)
 }

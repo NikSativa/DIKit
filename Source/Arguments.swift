@@ -1,16 +1,20 @@
 import Foundation
 
+@MainActor
 public struct Arguments {
     private let elements: [Any]
 
+    @MainActor
     public init(_ elements: [Any]) {
         self.elements = elements
     }
 
+    @MainActor
     public init(_ elements: Any...) {
         self.elements = elements
     }
 
+    @MainActor
     public init() {
         self.elements = []
     }
@@ -49,18 +53,22 @@ public struct Arguments {
     }
 }
 
+#if swift(>=6.0)
+
 // MARK: - Sequence
 
-extension Arguments: Sequence {
+extension Arguments: @preconcurrency Sequence {
     public func makeIterator() -> some IteratorProtocol {
         return ArgumentsIterator(self)
     }
 }
 
-private final class ArgumentsIterator: IteratorProtocol {
+@MainActor
+private final class ArgumentsIterator: @preconcurrency IteratorProtocol {
     let args: Arguments
     var idx = 0
 
+    @MainActor
     init(_ args: Arguments) {
         self.args = args
     }
@@ -79,8 +87,19 @@ private final class ArgumentsIterator: IteratorProtocol {
 
 // MARK: - Arguments + ExpressibleByArrayLiteral
 
+@MainActor
+extension Arguments: @preconcurrency ExpressibleByArrayLiteral {
+    public init(arrayLiteral elements: Any...) {
+        self.init(elements)
+    }
+}
+#else
+
+// MARK: - Arguments + ExpressibleByArrayLiteral
+
 extension Arguments: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: Any...) {
         self.init(elements)
     }
 }
+#endif

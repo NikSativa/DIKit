@@ -1,9 +1,11 @@
 import Foundation
 
+@MainActor
 public final class Container {
     private typealias Storyboardable = (Any, Resolver) -> Void
     private var storages: [String: Storage] = [:]
 
+    @MainActor
     public init(assemblies: [Assembly]) {
         let allAssemblies = assemblies.flatMap(\.allDependencies).unified()
         for assembly in allAssemblies {
@@ -11,6 +13,7 @@ public final class Container {
         }
     }
 
+    @MainActor
     public convenience init(assemblies: Assembly...) {
         self.init(assemblies: assemblies)
     }
@@ -75,7 +78,7 @@ extension Container: Registrator {
     @discardableResult
     public func register<T>(_ type: T.Type,
                             options: Options,
-                            entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+                            entity: @MainActor @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
         let key = key(type, name: options.name)
 
         if let found = storages[key] {
@@ -174,6 +177,7 @@ private extension Optional {
 }
 
 private extension [Assembly] {
+    @MainActor
     func unified() -> [Element] {
         var keys: Set<String> = []
         let unified = filter {
