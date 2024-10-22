@@ -1,5 +1,9 @@
 import Foundation
 
+/// `Inject` is a property wrapper for the factory that creates an instance of the specified type and store it - that means every time you access the instance property it returns existing one stored inside wrapper.
+///
+/// - Important: It resolves instance from the shared container on initialisation.
+/// - Note: It's useful when you are using shared container. See `Container.makeShared()` for more information.
 @MainActor
 @propertyWrapper
 public struct Inject<Value> {

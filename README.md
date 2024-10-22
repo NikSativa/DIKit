@@ -1,6 +1,7 @@
 # DIKit - Dependency Injection Kit
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FNikSativa%2FDIKit%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/NikSativa/DIKit)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FNikSativa%2FDIKit%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/NikSativa/DIKit)
+[![CI](https://github.com/NikSativa/DIKit/actions/workflows/swift_macos.yml/badge.svg)](https://github.com/NikSativa/DIKit/actions/workflows/swift_macos.yml)
 
 Swift library that allows you to use a dependency injection pattern in your project by creating a container that holds all the dependencies in one place.
 
