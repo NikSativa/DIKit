@@ -1,13 +1,13 @@
-#if canImport(ObjectiveC)
+#if os(iOS) && canImport(UIKit)
 import Foundation
-import ObjectiveC
 
 @MainActor
 public protocol SelfInjectable {
     func resolveDependncies(with resolver: Resolver)
 }
 
-// MARK: - NSObject + SelfInjectable
+#if canImport(ObjectiveC)
+import ObjectiveC
 
 extension NSObject {
     private enum AssociatedKeys {
@@ -69,4 +69,14 @@ extension NSObject {
         }
     }
 }
+#else
+public extension NSObjectProtocol {
+    @MainActor
+    func resolveDependnciesIfNeeded(with resolver: Resolver) {
+        if let selfInjectable = self as? SelfInjectable {
+            selfInjectable.resolveDependncies(with: resolver)
+        }
+    }
+}
+#endif
 #endif

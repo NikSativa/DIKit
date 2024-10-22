@@ -2,6 +2,11 @@
 import Combine
 import SwiftUI
 
+/// A property wrapper type that can resolve instance of specified type by DI container which is stored in the SwiftUI environment.
+///
+/// It resolves specified instance on the first access and stores it inside the wrapper via `@StateObject` property wrapper.
+///
+/// - Important: It storing instance inside the wrapper by `@StateObject` property wrapper and handles lifecycle of the instance by SwiftUI mechanisms.
 @MainActor
 @propertyWrapper
 public struct DIStateObject<Value: ObservableObject>: DynamicProperty {
@@ -15,8 +20,7 @@ public struct DIStateObject<Value: ObservableObject>: DynamicProperty {
         return resolveInstance()
     }
 
-    public init(named name: String? = nil,
-                with arguments: Arguments? = nil) {
+    public init(named name: String? = nil, with arguments: Arguments? = nil) {
         parametersHolder.name = name
         parametersHolder.arguments = arguments
     }

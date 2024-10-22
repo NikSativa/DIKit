@@ -1,10 +1,14 @@
 import Foundation
 
+/// A container that stores dependencies and resolves them.
+/// - Important: Assemblies order is important
 @MainActor
 public final class Container {
     private typealias Storyboardable = (Any, Resolver) -> Void
     private var storages: [String: Storage] = [:]
 
+    /// Initializes a new container with the specified assemblies.
+    /// - Important: Assemblies order is important
     @MainActor
     public init(assemblies: [Assembly]) {
         let allAssemblies = assemblies.flatMap(\.allDependencies).unified()
@@ -13,6 +17,8 @@ public final class Container {
         }
     }
 
+    /// Initializes a new container with the specified assemblies
+    /// - Important: Assemblies order is important
     @MainActor
     public convenience init(assemblies: Assembly...) {
         self.init(assemblies: assemblies)
@@ -24,10 +30,11 @@ public final class Container {
         }
     }
 
+    // Register ViewController factory. Available only for iOS platform
     #if os(iOS) && canImport(UIKit)
     public func registerViewControllerFactory() {
         register(ViewControllerFactory.self, options: .transient) { resolver, _ in
-            Impl.ViewControllerFactory(resolver: resolver)
+            return ViewControllerFactoryImpl(resolver: resolver)
         }
     }
     #endif
@@ -76,9 +83,7 @@ extension Container: Registrator {
 
     /// register classes
     @discardableResult
-    public func register<T>(_ type: T.Type,
-                            options: Options,
-                            entity: @MainActor @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+    public func register<T>(type: T.Type, options: Options, entity: @MainActor @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
         let key = key(type, name: options.name)
 
         if let found = storages[key] {
@@ -108,8 +113,7 @@ extension Container: Registrator {
         return Forwarder(container: self, storage: storage)
     }
 
-    public func registration(for type: (some Any).Type,
-                             name: String?) -> Forwarding {
+    public func registration(forType type: (some Any).Type, name: String?) -> Forwarding {
         let key = key(type, name: name)
 
         guard let storage = storages[key] else {
@@ -142,7 +146,7 @@ extension Container: ForwardRegistrator {
 // MARK: - Resolver
 
 extension Container: Resolver {
-    public func optionalResolve<T>(_ type: T.Type, named: String?, with arguments: Arguments) -> T? {
+    public func optionalResolve<T>(type: T.Type, named: String?, with arguments: Arguments) -> T? {
         let key = key(type, name: named)
         if let storage = storages[key],
            let resolved = storage.resolve(with: self, arguments: arguments) as? T {
