@@ -14,15 +14,14 @@ public struct DIObservedObject<Value: ObservableObject>: DynamicProperty {
     private var container: ObservableResolver
     @ObservedObject
     private var holder: InstanceHolder<Value> = .init()
-    private let parametersHolder: EnvParametersHolder = .init()
+    private let parametersHolder: EnvParametersHolder
 
     public var wrappedValue: Value {
         return resolveInstance()
     }
 
-    public init(named name: String? = nil, with arguments: Arguments? = nil) {
-        parametersHolder.name = name
-        parametersHolder.arguments = arguments
+    public init(named name: String? = nil, with arguments: Arguments? = nil, shouldCleanup: Bool = InjectSettings.shouldCleanupObservedObject) {
+        self.parametersHolder = .init(name: name, arguments: arguments, shouldCleanup: shouldCleanup)
     }
 
     public var projectedValue: Binding<Value> {
@@ -38,8 +37,7 @@ public struct DIObservedObject<Value: ObservableObject>: DynamicProperty {
 
         let instance: Value = container.resolve(named: parametersHolder.name, with: parametersHolder.arguments)
         holder.instance = instance
-        // @ObservedObject is recreated each time the view is redrawn
-        // parametersHolder.cleanup()
+        parametersHolder.cleanupIfNeeded()
         return instance
     }
 }
