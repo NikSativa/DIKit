@@ -19,18 +19,15 @@ public struct InjectLazy<Value> {
 
     public let projectedValue: Lazy<Value>
 
-    public init(named: String? = nil, with arguments: Arguments? = nil) {
+    public init(named: String? = nil, with arguments: Arguments? = nil, shouldCleanup: Bool = false) {
         guard let resolver = InjectSettings.resolver else {
             fatalError("Container is not shared")
         }
 
-        let holder: EnvParametersHolder = .init()
-        holder.name = named
-        holder.arguments = arguments
-
+        let holder: EnvParametersHolder = .init(name: named, arguments: arguments, shouldCleanup: shouldCleanup)
         self.projectedValue = .init(with: { [holder] in
             defer {
-                holder.cleanup()
+                holder.cleanupIfNeeded()
             }
             return resolver.resolve(named: holder.name, with: holder.arguments)
         })

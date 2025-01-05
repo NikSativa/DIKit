@@ -22,15 +22,14 @@ public struct DIProviderOptions {
 public struct DIProvider<Value>: DynamicProperty {
     @EnvironmentObject
     private var container: ObservableResolver
-    private let parametersHolder: EnvParametersHolder = .init()
+    private let parametersHolder: EnvParametersHolder
 
     public var wrappedValue: Value {
         return container.resolve(named: parametersHolder.name, with: parametersHolder.arguments)
     }
 
     public init(named name: String? = nil, with arguments: Arguments? = nil) {
-        parametersHolder.name = name
-        parametersHolder.arguments = arguments
+        self.parametersHolder = .init(name: name, arguments: arguments, shouldCleanup: false)
     }
 
     public var projectedValue: DIProviderOptions {
