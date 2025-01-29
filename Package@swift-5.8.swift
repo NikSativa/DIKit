@@ -15,7 +15,7 @@ let package = Package(
         .library(name: "DIKit", targets: ["DIKit"])
     ],
     dependencies: [
-        .package(url: "https://github.com/NikSativa/SpryKit.git", .upToNextMajor(from: "2.3.8"))
+        .package(url: "https://github.com/NikSativa/SpryKit.git", .upToNextMajor(from: "3.0.1"))
     ],
     targets: [
         .target(name: "DIKit",
