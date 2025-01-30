@@ -1,7 +1,7 @@
 import DIKit
 import Foundation
 
-public enum RegistrationInfo {
+enum RegistrationInfo {
     case register(Any.Type, Options)
     case registerStoryboardable(Any.Type)
     case registerViewController(Any.Type)

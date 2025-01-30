@@ -3,10 +3,11 @@ import Foundation
 
 @testable import DIKit
 
-public final class TestContainer {
-    public let registered: [RegistrationInfo]
+@MainActor
+final class TestContainer {
+    let registered: [RegistrationInfo]
 
-    public init(assemblies: [Assembly]) {
+    init(assemblies: [Assembly]) {
         let testRegistrator = TestRegistrator()
         for assemby in assemblies {
             assemby.assemble(with: testRegistrator)
@@ -31,15 +32,12 @@ extension TestRegistrator: ForwardRegistrator {
 // MARK: - Registrator
 
 extension TestRegistrator: Registrator {
-    public func registration<T>(for type: T.Type,
-                                name: String?) -> Forwarding {
+    func registration<T>(forType type: T.Type, name: String?) -> Forwarding {
         fatalError()
     }
 
     @discardableResult
-    public func register<T>(_ type: T.Type,
-                            options: Options,
-                            entity: @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+    func register<T>(type: T.Type, options: Options, entity: @MainActor @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding {
         registered.append(.register(type, options))
         return Forwarder(container: self, storage: TransientStorage(accessLevel: options.accessLevel, generator: entity))
     }
