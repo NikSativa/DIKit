@@ -16,7 +16,6 @@ class DIPropertyWrapperTestCase<AppView: DIPropertyWrapperView>: XCTestCase {
     private var resolvedArgs: [Bool] = []
     private let container: Container = .init(assemblies: [])
 
-    @MainActor
     func run_test(options: Options,
                   resolvingCounterByStep expectedResolvingCounter: [Int],
                   argsShouldBeDeallocatedAfterFirstResolve argsShouldBeDeallocated: Bool,
@@ -58,13 +57,11 @@ class DIPropertyWrapperTestCase<AppView: DIPropertyWrapperView>: XCTestCase {
         XCTAssertTrue(zip(resolvedArgs, resolvedArgs.count == 2 ? [true, false] : [true, !argsShouldBeDeallocated, false]).allSatisfy(==), "new view without args", file: file, line: line)
     }
 
-    @MainActor
     private func makeAppView(_ instance: Instance?) -> some View {
         return AppView(args: instance)
             .environmentObject(container.toObservable())
     }
 
-    @MainActor
     private func setup(_ option: Options) {
         container.register(ObservableInstance.self, options: option) { _, args in
             defer {

@@ -1,7 +1,6 @@
 #if os(iOS) && canImport(UIKit)
 import Foundation
 
-@MainActor
 public protocol SelfInjectable {
     func resolveDependncies(with resolver: Resolver)
 }
@@ -15,7 +14,6 @@ extension NSObject {
         static let dipTag: StaticString = "DIKit.dipTag"
     }
 
-    @MainActor
     @objc
     private var isInitializedFromDI: Bool {
         get {
@@ -32,7 +30,6 @@ extension NSObject {
         }
     }
 
-    @MainActor
     @objc
     private(set) var dipTag: String? {
         get {
@@ -53,7 +50,6 @@ extension NSObject {
         }
     }
 
-    @MainActor
     private func isDependenciesInitializationNeeded() -> Bool {
         defer {
             isInitializedFromDI = true
@@ -61,7 +57,6 @@ extension NSObject {
         return !isInitializedFromDI
     }
 
-    @MainActor
     public func resolveDependnciesIfNeeded(with resolver: Resolver) {
         if isDependenciesInitializationNeeded(),
            let selfInjectable = self as? SelfInjectable {
@@ -71,7 +66,6 @@ extension NSObject {
 }
 #else
 public extension NSObjectProtocol {
-    @MainActor
     func resolveDependnciesIfNeeded(with resolver: Resolver) {
         if let selfInjectable = self as? SelfInjectable {
             selfInjectable.resolveDependncies(with: resolver)

@@ -5,7 +5,6 @@ import Foundation
 ///
 /// - Important: It resolves instance from the shared container on each access.
 /// - Note: It's useful when you are using shared container. See `Container.makeShared()` for more information.
-@MainActor
 @propertyWrapper
 public struct InjectProvider<Value> {
     public private(set) var wrappedValue: Value {

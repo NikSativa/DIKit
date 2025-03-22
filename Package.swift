@@ -16,26 +16,23 @@ let package = Package(
         .library(name: "DIKit", targets: ["DIKit"])
     ],
     dependencies: [
-        .package(url: "https://github.com/NikSativa/SpryKit.git", .upToNextMinor(from: "3.0.2"))
+        .package(url: "https://github.com/NikSativa/SpryKit.git", .upToNextMinor(from: "3.0.2")),
+        .package(url: "https://github.com/NikSativa/Threading.git", .upToNextMinor(from: "2.1.1"))
     ],
     targets: [
         .target(name: "DIKit",
-                dependencies: [],
+                dependencies: [
+                    "Threading"
+                ],
                 path: "Source",
                 resources: [
                     .process("PrivacyInfo.xcprivacy")
-                ],
-                swiftSettings: [
-                    .define("supportsVisionOS", .when(platforms: [.visionOS])),
                 ]),
         .testTarget(name: "DIKitTests",
                     dependencies: [
                         "DIKit",
                         "SpryKit",
                     ],
-                    path: "Tests",
-                    swiftSettings: [
-                        .define("supportsVisionOS", .when(platforms: [.visionOS])),
-                    ])
+                    path: "Tests")
     ]
 )

@@ -9,7 +9,7 @@ public protocol ViewControllerFactory {
     func instantiate<T>(from nibName: String?, bundle: Bundle?) -> T
         where T: UIViewController
 
-    // Creates a navigation controller with a root view controller from a nib file.
+    /// Creates a navigation controller with a root view controller from a nib file.
     func createNavigationController<T, N>(from nibName: String?, bundle: Bundle?) -> (navigation: N, root: T)
         where T: UIViewController, N: UINavigationController
 }
@@ -30,7 +30,6 @@ public extension ViewControllerFactory {
     }
 }
 
-@MainActor
 final class ViewControllerFactoryImpl {
     private let resolver: Resolver
 

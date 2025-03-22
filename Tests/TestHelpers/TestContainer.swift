@@ -3,7 +3,6 @@ import Foundation
 
 @testable import DIKit
 
-@MainActor
 final class TestContainer {
     let registered: [RegistrationInfo]
 
@@ -37,7 +36,7 @@ extension TestRegistrator: Registrator {
     }
 
     @discardableResult
-    func register<T>(type: T.Type, options: Options, entity: @MainActor @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+    func register<T>(type: T.Type, options: Options, entity: @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding {
         registered.append(.register(type, options))
         return Forwarder(container: self, storage: TransientStorage(accessLevel: options.accessLevel, generator: entity))
     }

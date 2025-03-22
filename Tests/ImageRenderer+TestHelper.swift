@@ -8,7 +8,7 @@ extension ImageRenderer {
     @MainActor var actualImage: SpryKit.Image? {
         #if os(macOS)
         return nsImage
-        #elseif os(iOS) || os(tvOS) || os(watchOS) || supportsVisionOS
+        #elseif os(iOS) || os(tvOS) || os(watchOS) || os(visionOS)
         return uiImage
         #endif
     }

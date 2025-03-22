@@ -3,7 +3,6 @@ import Foundation
 import SwiftUI
 
 /// Options for resolving instance by `DIProvider` property wrapper.
-@MainActor
 public struct DIProviderOptions {
     /// Name of the instance to resolve.
     public let name: String?

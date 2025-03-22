@@ -22,7 +22,6 @@ import Foundation
 /// registrator.registration(for: BuildMode.self)
 ///    .implements(ApiBuildMode.self)
 /// ```
-@MainActor
 public protocol Forwarding {
     /// Registers a type for forwarding with the specified name and access level.
     @discardableResult
@@ -45,17 +44,14 @@ public extension Forwarding {
     }
 }
 
-@MainActor
 internal protocol ForwardRegistrator: AnyObject {
     func register<T>(_ type: T.Type, named: String?, storage: Storage)
 }
 
-@MainActor
 internal struct Forwarder: Forwarding {
     private unowned let container: ForwardRegistrator
     private let storage: Storage
 
-    @MainActor
     init(container: ForwardRegistrator,
          storage: Storage) {
         self.container = container

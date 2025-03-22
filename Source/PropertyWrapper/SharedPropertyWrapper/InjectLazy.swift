@@ -5,7 +5,6 @@ import Foundation
 ///
 /// - Important: It resolves instance from the shared container on ONCE it was accessed _(not on initialisation)_.
 /// - Note: It's useful when you are using shared container. See `Container.makeShared()` for more information.
-@MainActor
 @propertyWrapper
 public struct InjectLazy<Value> {
     public private(set) var wrappedValue: Value {

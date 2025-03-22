@@ -1,14 +1,24 @@
 import Foundation
 
+#if swift(>=6.0)
 /// Resolver for the container.
 /// It is used to resolve dependencies in the application according to your requirements.
-@MainActor
+public protocol Resolver: Sendable {
+    /// Resolve a dependency in the container.
+    /// The entity is created lazily if it is not created before, otherwise it uses the registration options.
+    /// If the registration is not found then return nil.
+    func optionalResolve<T>(type: T.Type, named: String?, with arguments: Arguments) -> T?
+}
+#else
+/// Resolver for the container.
+/// It is used to resolve dependencies in the application according to your requirements.
 public protocol Resolver {
     /// Resolve a dependency in the container.
     /// The entity is created lazily if it is not created before, otherwise it uses the registration options.
     /// If the registration is not found then return nil.
     func optionalResolve<T>(type: T.Type, named: String?, with arguments: Arguments) -> T?
 }
+#endif
 
 public extension Resolver {
     /// Resolve a dependency in the container.

@@ -1,7 +1,6 @@
 import Foundation
 
 /// An assembly that assembles dependencies for future container
-@MainActor
 public protocol Assembly {
     /// Unique identifier of the assembly that will be used to used to remove duplicates from the Container
     /// - Warning:  override it on your own risk

@@ -1,24 +1,20 @@
 import Foundation
 
 /// A container that stores arguments for resolving dependencies.
-@MainActor
 public struct Arguments {
     private let elements: [Any]
 
     /// Initializes a new container with the specified elements.
-    @MainActor
     public init(_ elements: [Any]) {
         self.elements = elements
     }
 
     /// Initializes a new container with the specified elements.
-    @MainActor
     public init(_ elements: Any...) {
         self.elements = elements
     }
 
     /// Initializes a new container without elements.
-    @MainActor
     public init() {
         self.elements = []
     }
@@ -66,20 +62,20 @@ public struct Arguments {
 
 #if swift(>=6.0)
 
+extension Arguments: @unchecked Sendable {}
+
 // MARK: - Sequence
 
-extension Arguments: @preconcurrency Sequence {
+extension Arguments: Sequence {
     public func makeIterator() -> some IteratorProtocol {
         return ArgumentsIterator(self)
     }
 }
 
-@MainActor
-private final class ArgumentsIterator: @preconcurrency IteratorProtocol {
+private final class ArgumentsIterator: IteratorProtocol {
     let args: Arguments
     var idx = 0
 
-    @MainActor
     init(_ args: Arguments) {
         self.args = args
     }
@@ -95,22 +91,12 @@ private final class ArgumentsIterator: @preconcurrency IteratorProtocol {
         return args[idx]
     }
 }
+#endif
 
-// MARK: - Arguments + ExpressibleByArrayLiteral
-
-@MainActor
-extension Arguments: @preconcurrency ExpressibleByArrayLiteral {
-    public init(arrayLiteral elements: Any...) {
-        self.init(elements)
-    }
-}
-#else
-
-// MARK: - Arguments + ExpressibleByArrayLiteral
+// MARK: - ExpressibleByArrayLiteral
 
 extension Arguments: ExpressibleByArrayLiteral {
     public init(arrayLiteral elements: Any...) {
         self.init(elements)
     }
 }
-#endif

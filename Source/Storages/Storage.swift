@@ -1,6 +1,5 @@
 import Foundation
 
-@MainActor
 protocol Storage {
     typealias Entity = Any
     typealias Generator = (Resolver, _ arguments: Arguments) -> Entity
