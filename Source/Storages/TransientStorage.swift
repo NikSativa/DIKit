@@ -1,6 +1,5 @@
 import Foundation
 
-@MainActor
 final class TransientStorage: Storage {
     private let generator: Generator
     let accessLevel: Options.AccessLevel

@@ -1,6 +1,5 @@
 import Foundation
 
-@MainActor
 final class WeakStorage: Storage {
     private weak var entity: AnyObject?
     private let generator: Generator

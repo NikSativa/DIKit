@@ -1,7 +1,6 @@
 import Foundation
 
 /// Options for the registration of the dependency.
-@MainActor
 public struct Options: Equatable {
     /// Access level for the dependency.
     /// - final: Dependency is final and can't be overridden.
@@ -110,7 +109,6 @@ public struct Options: Equatable {
 ///     return ServiceImpl()
 /// }
 /// ```
-@MainActor
 public func +(lhs: Options, rhs: Options.EntityKind) -> Options {
     return .init(accessLevel: lhs.accessLevel, entityKind: rhs, name: lhs.name)
 }
@@ -123,7 +121,6 @@ public func +(lhs: Options, rhs: Options.EntityKind) -> Options {
 ///     return ServiceImpl()
 /// }
 /// ```
-@MainActor
 public func +(lhs: Options, rhs: Options.AccessLevel) -> Options {
     return .init(accessLevel: rhs, entityKind: lhs.entityKind, name: lhs.name)
 }
@@ -136,7 +133,6 @@ public func +(lhs: Options, rhs: Options.AccessLevel) -> Options {
 ///     return ServiceImpl()
 /// }
 /// ```
-@MainActor
 public func +(lhs: Options, rhs: String) -> Options {
     return .init(accessLevel: lhs.accessLevel, entityKind: lhs.entityKind, name: rhs)
 }

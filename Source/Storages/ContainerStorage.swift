@@ -1,6 +1,5 @@
 import Foundation
 
-@MainActor
 final class ContainerStorage: Storage {
     private var entity: Any?
     private let generator: Generator

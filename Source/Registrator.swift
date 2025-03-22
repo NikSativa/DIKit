@@ -3,7 +3,6 @@ import Foundation
 /// Registrator is a protocol for registering classes in the container.
 ///
 /// - Important: Registration order is important
-@MainActor
 public protocol Registrator {
     /// Register a dependency in the container. The entity is created lazily
     ///
@@ -15,7 +14,7 @@ public protocol Registrator {
     ///
     /// See **`Forwarding`** protocol for more details.
     @discardableResult
-    func register<T>(type: T.Type, options: Options, entity: @MainActor @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding
+    func register<T>(type: T.Type, options: Options, entity: @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding
 
     /// Find a registration of the dependency in the container.
     /// It is useful when you want to use a type that is already registered in the container to expose it as another type.
@@ -26,7 +25,6 @@ public protocol Registrator {
     func registration<T>(forType type: T.Type, name: String?) -> Forwarding
 }
 
-@MainActor
 public extension Registrator {
     /// Register a dependency in the container. The entity is created lazily
     ///
@@ -38,7 +36,7 @@ public extension Registrator {
     @discardableResult
     func register<T>(_ type: T.Type = T.self,
                      options: Options = .default,
-                     entity: @MainActor @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+                     entity: @escaping (_ resolver: Resolver, _ arguments: Arguments) -> T) -> Forwarding {
         return register(type: type, options: options, entity: entity)
     }
 
@@ -52,7 +50,7 @@ public extension Registrator {
     @discardableResult
     func register<T>(_ type: T.Type = T.self,
                      options: Options = .default,
-                     entity: @MainActor @escaping (_ resolver: Resolver) -> T) -> Forwarding {
+                     entity: @escaping (_ resolver: Resolver) -> T) -> Forwarding {
         return register(type: type,
                         options: options,
                         entity: { resolver, _ in
@@ -70,7 +68,7 @@ public extension Registrator {
     @discardableResult
     func register<T>(_ type: T.Type = T.self,
                      options: Options = .default,
-                     entity: @MainActor @escaping () -> T) -> Forwarding {
+                     entity: @escaping () -> T) -> Forwarding {
         return register(type: type,
                         options: options,
                         entity: { _, _ in

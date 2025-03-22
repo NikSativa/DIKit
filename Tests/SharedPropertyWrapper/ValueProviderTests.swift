@@ -2,7 +2,6 @@ import DIKit
 import Foundation
 import XCTest
 
-@MainActor
 final class ValueProviderTests: XCTestCase {
     private var resolvingCounter: Int = 0
     private let container: Container = .init(assemblies: [])
