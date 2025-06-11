@@ -26,7 +26,8 @@ final class DIStateTests: DIPropertyWrapperTestCase<DIStateView> {
 }
 
 struct DIStateView: DIPropertyWrapperView {
-    @DIState var instance: Value
+    @DIState
+    var instance: Value
 
     init(args: Instance?) {
         self._instance = .init(with: args.map { [$0] }, shouldCleanup: true)

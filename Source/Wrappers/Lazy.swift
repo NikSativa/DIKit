@@ -6,11 +6,11 @@ import Threading
 ///
 /// - Note: It's useful when you need to create a new instance of the object every time to solve cyclic dependencies.
 public final class Lazy<Wrapped>: InstanceWrapper {
-    @Atomic(mutex: .pthread(.recursive), read: .sync, write: .sync)
+    @AtomicValue
     private var factory: (() -> Wrapped)!
 
     public private(set) lazy var instance: Wrapped = {
-        let factory = $factory.mutate { factory in
+        let factory = $factory.syncUnchecked { factory in
             defer {
                 factory = nil
             }

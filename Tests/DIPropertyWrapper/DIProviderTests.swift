@@ -26,7 +26,8 @@ final class DIProviderTests: DIPropertyWrapperTestCase<DIProviderView> {
 }
 
 struct DIProviderView: DIPropertyWrapperView {
-    @DIProvider var instance: Instance
+    @DIProvider
+    var instance: Instance
 
     init(args: Instance?) {
         self._instance = .init(with: args.map { [$0] })
