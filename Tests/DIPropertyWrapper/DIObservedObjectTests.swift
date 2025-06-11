@@ -25,7 +25,8 @@ final class DIObservedObjectTests: DIPropertyWrapperTestCase<DIObservedObjectVie
 }
 
 struct DIObservedObjectView: DIPropertyWrapperView {
-    @DIObservedObject var instance: ObservableInstance
+    @DIObservedObject
+    var instance: ObservableInstance
 
     init(args: Instance?) {
         self._instance = .init(with: args.map { [$0] })

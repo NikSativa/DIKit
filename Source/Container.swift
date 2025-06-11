@@ -4,9 +4,7 @@ import Threading
 /// A container that stores dependencies and resolves them.
 /// - Important: Assemblies order is important
 public final class Container {
-    private typealias Storyboardable = (Any, Resolver) -> Void
-
-    @Atomic(mutex: .pthread(.recursive), read: .sync, write: .sync)
+    @AtomicValue
     private var storages: [String: Storage] = [:]
 
     /// Initializes a new container with the specified assemblies.
@@ -72,7 +70,7 @@ extension Container: Registrator {
     /// register classes
     @discardableResult
     public func register<T>(type: T.Type, options: Options, entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
-        return $storages.mutate { storages in
+        return $storages.syncUnchecked { storages in
             let key = key(type, name: options.name)
 
             if let found = storages[key] {
@@ -104,7 +102,7 @@ extension Container: Registrator {
     }
 
     public func registration(forType type: (some Any).Type, name: String?) -> Forwarding {
-        return $storages.mutate { storages in
+        return $storages.syncUnchecked { storages in
             let key = key(type, name: name)
 
             guard let storage = storages[key] else {
@@ -120,7 +118,7 @@ extension Container: Registrator {
 
 extension Container: ForwardRegistrator {
     func register(_ type: (some Any).Type, named: String?, storage: Storage) {
-        return $storages.mutate { storages in
+        return $storages.syncUnchecked { storages in
             let key = key(type, name: named)
 
             if let found = storages[key] {
@@ -141,7 +139,7 @@ extension Container: ForwardRegistrator {
 
 extension Container: Resolver {
     public func optionalResolve<T>(type: T.Type, named: String?, with arguments: Arguments) -> T? {
-        let storage = $storages.mutate { storages in
+        let storage = $storages.syncUnchecked { storages in
             let key = key(type, name: named)
             return storages[key]
         }

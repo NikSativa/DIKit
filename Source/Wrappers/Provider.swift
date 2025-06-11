@@ -6,20 +6,17 @@ import Threading
 ///
 /// - Note: It's useful when you need to create a new instance of the object every time to solve cyclic dependencies.
 public final class Provider<Wrapped>: InstanceWrapper {
-    @Atomic
+    @AtomicValue
     private var factory: () -> Wrapped
 
     public var instance: Wrapped {
-        return $factory.mutate { factory in
+        return $factory.syncUnchecked { factory in
             return factory()
         }
     }
 
     public init(with factory: @escaping () -> Wrapped) {
-        self._factory = .init(wrappedValue: factory,
-                              mutex: .pthread(.recursive),
-                              read: .sync,
-                              write: .sync)
+        self.factory = factory
     }
 }
 

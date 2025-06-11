@@ -26,7 +26,8 @@ final class DIStateObjectTests: DIPropertyWrapperTestCase<DIStateObjectView> {
 }
 
 struct DIStateObjectView: DIPropertyWrapperView {
-    @DIStateObject var instance: ObservableInstance
+    @DIStateObject
+    var instance: ObservableInstance
 
     init(args: Instance?) {
         self._instance = .init(with: args.map { [$0] }, shouldCleanup: true)

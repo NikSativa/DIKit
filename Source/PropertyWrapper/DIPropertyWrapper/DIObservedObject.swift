@@ -50,9 +50,11 @@ private final class InstanceHolder<Value: ObservableObject>: ObservableObject {
             if oldValue !== instance {
                 assert(observers.isEmpty, "Subscribed to `objectWillChange` multiple times. Should never happen.")
                 observers = []
-                instance.objectWillChange.sink { [unowned self] _ in
-                    objectWillChange.send()
-                }.store(in: &observers)
+                instance.objectWillChange
+                    .sink { [unowned self] _ in
+                        objectWillChange.send()
+                    }
+                    .store(in: &observers)
             }
         }
     }

@@ -1,6 +1,5 @@
-import DIKit
-import Foundation
 
+import Foundation
 @testable import DIKit
 
 final class TestContainer {
