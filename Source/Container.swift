@@ -66,8 +66,27 @@ public final class Container {
 
 // MARK: - Registrator
 
+#if swift(>=6.0)
+extension Container: IsolatedMainRegistrator {
+    public func register<T>(type: T.Type, options: Options, entity: @escaping @MainActor (any Resolver, Arguments) -> T) -> any Forwarding {
+        return register(type: type, options: options) { resolver, args in
+            let usendable = Queue.isolatedMain.sync {
+                let resolved = entity(resolver, args)
+                return USendable(resolved)
+            }
+            return usendable.value
+        }
+    }
+}
+#endif
+
 extension Container: Registrator {
-    /// register classes
+    #if swift(>=6.0)
+    public var isolatedMain: IsolatedMainRegistrator {
+        return self
+    }
+    #endif
+
     @discardableResult
     public func register<T>(type: T.Type, options: Options, entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
         return $storages.syncUnchecked { storages in
