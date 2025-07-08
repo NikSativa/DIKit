@@ -1,4 +1,3 @@
-
 import Foundation
 @testable import DIKit
 
@@ -30,6 +29,12 @@ extension TestRegistrator: ForwardRegistrator {
 // MARK: - Registrator
 
 extension TestRegistrator: Registrator {
+    #if swift(>=6.0)
+    var isolatedMain: IsolatedMainRegistrator {
+        fatalError()
+    }
+    #endif
+
     func registration<T>(forType type: T.Type, name: String?) -> Forwarding {
         fatalError()
     }
