@@ -5,14 +5,20 @@ import Threading
 /// it will request instance from the container and it will create a new instance or return existing one based on registration options.
 ///
 /// - Note: It's useful when you need to create a new instance of the object every time to solve cyclic dependencies.
+@propertyWrapper
 public final class Provider<Wrapped>: InstanceWrapper {
     @AtomicValue
     private var factory: () -> Wrapped
 
-    public var instance: Wrapped {
+    public var wrappedValue: Wrapped {
         return $factory.syncUnchecked { factory in
             return factory()
         }
+    }
+
+    @available(*, deprecated, renamed: "wrappedValue")
+    public var instance: Wrapped {
+        wrappedValue
     }
 
     public init(with factory: @escaping () -> Wrapped) {

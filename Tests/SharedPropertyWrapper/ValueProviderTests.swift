@@ -21,11 +21,11 @@ final class ValueProviderTests: XCTestCase {
         var subject: Provider<Value> = container.resolveWrapped()
         XCTAssertEqual(resolvingCounter, 0)
 
-        var i1: Value? = subject.instance
+        var i1: Value? = subject.wrappedValue
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i1)
 
-        var i2: Value? = subject.instance
+        var i2: Value? = subject.wrappedValue
         XCTAssertEqual(resolvingCounter, 2)
         XCTAssertNotNil(i2)
         XCTAssertNotEqual(i1, i2)
@@ -36,11 +36,11 @@ final class ValueProviderTests: XCTestCase {
 
         subject = container.resolveWrapped()
 
-        i1 = subject.instance
+        i1 = subject.wrappedValue
         XCTAssertEqual(resolvingCounter, 3)
         XCTAssertNotNil(i1)
 
-        i2 = subject.instance
+        i2 = subject.wrappedValue
         XCTAssertEqual(resolvingCounter, 4)
         XCTAssertNotNil(i2)
         XCTAssertNotEqual(i1, i2)
@@ -52,11 +52,11 @@ final class ValueProviderTests: XCTestCase {
         var subject: Provider<Value> = container.resolveWrapped()
         XCTAssertEqual(resolvingCounter, 0)
 
-        var i1: Value? = subject.instance
+        var i1: Value? = subject.wrappedValue
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i1)
 
-        var i2: Value? = subject.instance
+        var i2: Value? = subject.wrappedValue
         XCTAssertEqual(resolvingCounter, 2)
         XCTAssertNotNil(i2)
         XCTAssertNotEqual(i1, i2)
@@ -67,11 +67,11 @@ final class ValueProviderTests: XCTestCase {
 
         subject = container.resolveWrapped()
 
-        i1 = subject.instance
+        i1 = subject.wrappedValue
         XCTAssertEqual(resolvingCounter, 3)
         XCTAssertNotNil(i1)
 
-        i2 = subject.instance
+        i2 = subject.wrappedValue
         XCTAssertEqual(resolvingCounter, 4)
         XCTAssertNotNil(i2)
         XCTAssertNotEqual(i1, i2)
@@ -83,11 +83,11 @@ final class ValueProviderTests: XCTestCase {
         var subject: Provider<Value> = container.resolveWrapped()
         XCTAssertEqual(resolvingCounter, 0)
 
-        var i1: Value? = subject.instance
+        var i1: Value? = subject.wrappedValue
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i1)
 
-        var i2: Value? = subject.instance
+        var i2: Value? = subject.wrappedValue
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i2)
         XCTAssertEqual(i1, i2)
@@ -98,11 +98,11 @@ final class ValueProviderTests: XCTestCase {
 
         subject = container.resolveWrapped()
 
-        i1 = subject.instance
+        i1 = subject.wrappedValue
         XCTAssertEqual(resolvingCounter, 1) // retained by container
         XCTAssertNotNil(i1)
 
-        i2 = subject.instance
+        i2 = subject.wrappedValue
         XCTAssertEqual(resolvingCounter, 1)
         XCTAssertNotNil(i2)
         XCTAssertEqual(i1, i2)
