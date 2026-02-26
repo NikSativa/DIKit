@@ -13,7 +13,7 @@ final class ThreadSafeResolutionTests: XCTestCase {
         container = nil
     }
 
-    func test_thread_safe_resolution() async throws {
+    func test_thread_safe_resolution() async {
         // Register different types with different scopes
         container.register(Instance.self, options: .container) {
             return Instance(id: 1)
@@ -61,7 +61,7 @@ final class ThreadSafeResolutionTests: XCTestCase {
         await fulfillment(of: [expectation], timeout: 5.0)
     }
 
-    func test_thread_safe_transient_resolution() async throws {
+    func test_thread_safe_transient_resolution() async {
         // Register with transient scope
         container.register(Instance.self, options: .transient) {
             return Instance(id: Int.random(in: 1...1000))
@@ -85,7 +85,7 @@ final class ThreadSafeResolutionTests: XCTestCase {
         await fulfillment(of: [expectation], timeout: 5.0)
     }
 
-    func test_thread_safe_weak_resolution() async throws {
+    func test_thread_safe_weak_resolution() async {
         // Register with weak scope
         container.register(Instance.self, options: .weak) {
             return Instance(id: 1)

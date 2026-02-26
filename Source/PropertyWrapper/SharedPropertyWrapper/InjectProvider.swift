@@ -9,7 +9,7 @@ import Foundation
 public struct InjectProvider<Value> {
     public private(set) var wrappedValue: Value {
         get {
-            return projectedValue.instance
+            return projectedValue.wrappedValue
         }
         set {
             assertionFailure("<Inject> setter is unavailable")

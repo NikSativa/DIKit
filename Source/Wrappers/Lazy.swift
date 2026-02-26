@@ -5,11 +5,12 @@ import Threading
 /// it will request instance from the container ONCE and return existing one stored inside wrapper.
 ///
 /// - Note: It's useful when you need to create a new instance of the object every time to solve cyclic dependencies.
+@propertyWrapper
 public final class Lazy<Wrapped>: InstanceWrapper {
     @AtomicValue
     private var factory: (() -> Wrapped)!
 
-    public private(set) lazy var instance: Wrapped = {
+    public private(set) lazy var wrappedValue: Wrapped = {
         let factory = $factory.syncUnchecked { factory in
             defer {
                 factory = nil
@@ -18,6 +19,11 @@ public final class Lazy<Wrapped>: InstanceWrapper {
         }
         return factory!()
     }()
+
+    @available(*, deprecated, renamed: "wrappedValue")
+    public var instance: Wrapped {
+        wrappedValue
+    }
 
     public init(with factory: @escaping () -> Wrapped) {
         self.factory = factory
