@@ -80,8 +80,8 @@ private final class ArgumentsIterator: IteratorProtocol {
         self.args = args
     }
 
-    func next() -> Int? {
-        guard idx < 0 || idx >= args.count else {
+    func next() -> Any? {
+        guard idx >= 0, idx < args.count else {
             return nil
         }
 

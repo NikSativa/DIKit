@@ -1,4 +1,5 @@
 #if os(iOS) && canImport(UIKit)
+// swiftformat:disable all
 import DIKit
 import Foundation
 import SpryKit
@@ -24,4 +25,5 @@ final class FakeViewControllerFactory: ViewControllerFactory, Spryable {
         return spryify(arguments: T.self, N.self, nibName, bundle)
     }
 }
+// swiftformat:enable all
 #endif

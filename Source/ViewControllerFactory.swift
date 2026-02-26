@@ -1,4 +1,5 @@
 #if os(iOS) && canImport(UIKit)
+// swiftformat:disable all
 import Foundation
 import UIKit
 
@@ -63,4 +64,5 @@ extension ViewControllerFactoryImpl: ViewControllerFactory {
         return (N(rootViewController: root), root)
     }
 }
+// swiftformat:enable all
 #endif
