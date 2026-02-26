@@ -1,6 +1,8 @@
 import Foundation
+import Threading
 
 final class ContainerStorage: Storage {
+    private let lock = AnyLock.default
     private var entity: Any?
     private let generator: Generator
     let accessLevel: Options.AccessLevel
@@ -12,6 +14,11 @@ final class ContainerStorage: Storage {
     }
 
     func resolve(with resolver: Resolver, arguments: Arguments) -> Entity {
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
+
         if let entity {
             return entity
         }
