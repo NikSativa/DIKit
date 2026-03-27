@@ -1,23 +1,23 @@
-// swift-tools-version:5.9
+// swift-tools-version:5.10
 // swiftformat:disable all
 import PackageDescription
 
 let package = Package(
     name: "DIKit",
     platforms: [
-        .iOS(.v14),
-        .macOS(.v13),
-        .macCatalyst(.v14),
+        .iOS(.v16),
+        .macOS(.v14),
+        .macCatalyst(.v16),
         .visionOS(.v1),
-        .tvOS(.v14),
-        .watchOS(.v7)
+        .tvOS(.v16),
+        .watchOS(.v9)
     ],
     products: [
         .library(name: "DIKit", targets: ["DIKit"])
     ],
     dependencies: [
-        .package(url: "https://github.com/NikSativa/SpryKit.git", from: "3.0.4"),
-        .package(url: "https://github.com/NikSativa/Threading.git", from: "2.2.0")
+        .package(url: "https://github.com/NikSativa/SpryKit.git", from: "3.1.0"),
+        .package(url: "https://github.com/NikSativa/Threading.git", from: "2.2.1")
     ],
     targets: [
         .target(name: "DIKit",
