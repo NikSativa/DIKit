@@ -17,7 +17,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/NikSativa/SpryKit.git", from: "3.2.0"),
-        .package(url: "https://github.com/NikSativa/Threading.git", from: "2.3.0")
+        .package(url: "https://github.com/NikSativa/Threading.git", from: "2.3.1")
     ],
     targets: [
         .target(name: "DIKit",

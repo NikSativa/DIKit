@@ -215,14 +215,29 @@ private extension Assembly {
 
 @inline(__always)
 private func key(_ type: some Any, name: String?) -> String {
-    let key = String(reflecting: type).normalized
+    let key = typeKey(type)
     return name.map { key + "_" + $0 } ?? key
 }
 
 @inline(__always)
 private func key(_ obj: Any, name: String?) -> String {
-    let key = String(reflecting: type(of: obj)).normalized
+    let key = typeKey(type(of: obj))
     return name.map { key + "_" + $0 } ?? key
+}
+
+/// Produces a unique, stable string key for a metatype.
+///
+/// `String(reflecting:)` returns `"<<< invalid type >>>"` for parameterized
+/// existentials like `any P<X>`, which would collapse all such types into
+/// the same key. `_mangledTypeName` yields the unique mangled name and
+/// handles these cases correctly; we fall back to reflection only if the
+/// mangled name is unavailable.
+@inline(__always)
+private func typeKey(_ type: Any) -> String {
+    if let meta = type as? Any.Type, let mangled = _mangledTypeName(meta) {
+        return mangled
+    }
+    return String(reflecting: type).normalized
 }
 
 #if swift(>=6.0)
