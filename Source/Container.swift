@@ -227,7 +227,7 @@ private func key(_ obj: Any, name: String?) -> String {
 
 /// Produces a unique, stable string key for a metatype.
 ///
-/// Types conforming to `ContainerKeyProviding` supply their own key.
+/// Types conforming to `EntityKeyProviding` supply their own key.
 /// Otherwise the key is derived from the type's runtime metadata via
 /// `ObjectIdentifier` — this works for every metatype Swift can represent,
 /// including parameterized existentials (`any P<X>`) where
@@ -236,8 +236,8 @@ private func key(_ obj: Any, name: String?) -> String {
 @inline(__always)
 private func typeKey(_ type: Any) -> String {
     if let meta = type as? Any.Type {
-        if let custom = meta as? any ContainerKeyProviding.Type {
-            return custom.containerKey
+        if let custom = meta as? any EntityKeyProviding.Type {
+            return custom.entityKey
         }
         return String(ObjectIdentifier(meta).hashValue)
     }

@@ -4,14 +4,14 @@ import Foundation
 /// a type.
 ///
 /// By default the container derives keys from the type's runtime metadata
-/// via `ObjectIdentifier`. Types conforming to `ContainerKeyProviding`
+/// via `ObjectIdentifier`. Types conforming to `EntityKeyProviding`
 /// supply their own key instead — useful for pinning a stable key across
 /// builds, aliasing types, or bridging types whose metatype cannot be
 /// reflected reliably.
 ///
 /// The key is used for both registration and resolution, so every
 /// registration site for a given type must produce the same key.
-public protocol ContainerKeyProviding {
+public protocol EntityKeyProviding {
     /// Stable key identifying this type inside a `Container`.
-    static var containerKey: String { get }
+    static var entityKey: String { get }
 }

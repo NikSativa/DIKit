@@ -83,24 +83,24 @@ private struct AnyImplA<Item: Sendable>: PrimaryAssocA {
     func a() -> Item { value }
 }
 
-// MARK: - ContainerKeyProviding
+// MARK: - EntityKeyProviding
 
-private struct CustomKeyedA: ContainerKeyProviding, Equatable {
-    static var containerKey: String { "dikit.tests.shared-key" }
+private struct CustomKeyedA: EntityKeyProviding, Equatable {
+    static var entityKey: String { "dikit.tests.shared-key" }
     let id: Int
 }
 
-private struct CustomKeyedB: ContainerKeyProviding, Equatable {
-    static var containerKey: String { "dikit.tests.shared-key" }
+private struct CustomKeyedB: EntityKeyProviding, Equatable {
+    static var entityKey: String { "dikit.tests.shared-key" }
     let label: String
 }
 
-private struct CustomKeyedStable: ContainerKeyProviding, Equatable {
-    static var containerKey: String { "dikit.tests.stable" }
+private struct CustomKeyedStable: EntityKeyProviding, Equatable {
+    static var entityKey: String { "dikit.tests.stable" }
     let value: Int
 }
 
-final class ContainerKeyProvidingTests: XCTestCase {
+final class EntityKeyProvidingTests: XCTestCase {
     func test_custom_key_is_used_for_registration_and_resolution() {
         let container = Container()
 
@@ -122,7 +122,7 @@ final class ContainerKeyProvidingTests: XCTestCase {
             CustomKeyedA(id: 1)
         }
 
-        // Since both types share the same containerKey and the first
+        // Since both types share the same entityKey and the first
         // registration is `.open`, the second one overwrites it.
         container.register(CustomKeyedB.self, options: .container + .open) { _ in
             CustomKeyedB(label: "second")
