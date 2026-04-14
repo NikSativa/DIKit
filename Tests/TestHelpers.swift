@@ -18,10 +18,6 @@ final class ObservableInstance: ObservableObject {
 
 struct Value: Equatable {
     let id: Int
-
-    init(id: Int) {
-        self.id = id
-    }
 }
 
 // MARK: - Instance + Equatable

@@ -18,17 +18,21 @@ private struct Marker: Sendable, Equatable {
 }
 
 private struct ImplA: PrimaryAssocA {
-    func a() -> Marker { .init(id: 1) }
+    func a() -> Marker {
+        .init(id: 1)
+    }
 }
 
 private struct ImplB: PrimaryAssocB {
-    func b() -> Marker { .init(id: 2) }
+    func b() -> Marker {
+        .init(id: 2)
+    }
 }
 
-// Verifies that parameterized existentials (`any P<X>`) do not collide in the
-// container's key derivation. Historically `String(reflecting:)` returned
-// `"<<< invalid type >>>"` for these types, causing every `any P<X>`
-// registration to collapse to the same key.
+/// Verifies that parameterized existentials (`any P<X>`) do not collide in the
+/// container's key derivation. Historically `String(reflecting:)` returned
+/// `"<<< invalid type >>>"` for these types, causing every `any P<X>`
+/// registration to collapse to the same key.
 final class ParameterizedExistentialKeyTests: XCTestCase {
     func test_distinct_parameterized_existentials_do_not_collide() {
         let container = Container()
@@ -80,23 +84,34 @@ final class ParameterizedExistentialKeyTests: XCTestCase {
 
 private struct AnyImplA<Item: Sendable>: PrimaryAssocA {
     let value: Item
-    func a() -> Item { value }
+    func a() -> Item {
+        value
+    }
 }
 
 // MARK: - EntityKeyProviding
 
 private struct CustomKeyedA: EntityKeyProviding, Equatable {
-    static var entityKey: String { "dikit.tests.shared-key" }
+    static var entityKey: String {
+        "dikit.tests.shared-key"
+    }
+
     let id: Int
 }
 
 private struct CustomKeyedB: EntityKeyProviding, Equatable {
-    static var entityKey: String { "dikit.tests.shared-key" }
+    static var entityKey: String {
+        "dikit.tests.shared-key"
+    }
+
     let label: String
 }
 
 private struct CustomKeyedStable: EntityKeyProviding, Equatable {
-    static var entityKey: String { "dikit.tests.stable" }
+    static var entityKey: String {
+        "dikit.tests.stable"
+    }
+
     let value: Int
 }
 

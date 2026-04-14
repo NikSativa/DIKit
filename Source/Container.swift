@@ -235,13 +235,26 @@ private func key(_ obj: Any, name: String?) -> String {
 /// `_mangledTypeName` may return nil.
 @inline(__always)
 private func typeKey(_ type: Any) -> String {
+    if let custom = type as? any EntityKeyProviding.Type {
+        return custom.entityKey
+    }
+
+    let mirrored = String(reflecting: Mirror(reflecting: type).subjectType).normalized
+    if !mirrored.contains("invalid type") {
+        return mirrored
+    }
+
+    let name = String(reflecting: type).normalized
+    if !name.contains("invalid type") {
+        return name
+    }
+
     if let meta = type as? Any.Type {
-        if let custom = meta as? any EntityKeyProviding.Type {
-            return custom.entityKey
-        }
         return String(ObjectIdentifier(meta).hashValue)
     }
-    return String(reflecting: type).normalized
+
+    assertionFailure("DIKit could not derive a stable key for \(type). Conform the type to EntityKeyProviding to supply one explicitly.")
+    return String(describing: type).normalized
 }
 
 #if swift(>=6.0)
