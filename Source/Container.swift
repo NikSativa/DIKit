@@ -227,15 +227,18 @@ private func key(_ obj: Any, name: String?) -> String {
 
 /// Produces a unique, stable string key for a metatype.
 ///
-/// `String(reflecting:)` returns `"<<< invalid type >>>"` for parameterized
-/// existentials like `any P<X>`, which would collapse all such types into
-/// the same key. `ObjectIdentifier` derives its value from the type's
-/// runtime metadata pointer, so it is unique per type and works for every
-/// metatype Swift can represent (including parameterized existentials and
-/// cross-module generics where `_mangledTypeName` may return nil).
+/// Types conforming to `ContainerKeyProviding` supply their own key.
+/// Otherwise the key is derived from the type's runtime metadata via
+/// `ObjectIdentifier` — this works for every metatype Swift can represent,
+/// including parameterized existentials (`any P<X>`) where
+/// `String(reflecting:)` returns `"<<< invalid type >>>"` and
+/// `_mangledTypeName` may return nil.
 @inline(__always)
 private func typeKey(_ type: Any) -> String {
     if let meta = type as? Any.Type {
+        if let custom = meta as? any ContainerKeyProviding.Type {
+            return custom.containerKey
+        }
         return String(ObjectIdentifier(meta).hashValue)
     }
     return String(reflecting: type).normalized

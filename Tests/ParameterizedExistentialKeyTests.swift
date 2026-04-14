@@ -82,3 +82,59 @@ private struct AnyImplA<Item: Sendable>: PrimaryAssocA {
     let value: Item
     func a() -> Item { value }
 }
+
+// MARK: - ContainerKeyProviding
+
+private struct CustomKeyedA: ContainerKeyProviding, Equatable {
+    static var containerKey: String { "dikit.tests.shared-key" }
+    let id: Int
+}
+
+private struct CustomKeyedB: ContainerKeyProviding, Equatable {
+    static var containerKey: String { "dikit.tests.shared-key" }
+    let label: String
+}
+
+private struct CustomKeyedStable: ContainerKeyProviding, Equatable {
+    static var containerKey: String { "dikit.tests.stable" }
+    let value: Int
+}
+
+final class ContainerKeyProvidingTests: XCTestCase {
+    func test_custom_key_is_used_for_registration_and_resolution() {
+        let container = Container()
+
+        container.register(CustomKeyedStable.self, options: .container) { _ in
+            CustomKeyedStable(value: 7)
+        }
+
+        let resolved: CustomKeyedStable = container.resolve()
+        XCTAssertEqual(resolved, CustomKeyedStable(value: 7))
+    }
+
+    func test_types_with_same_container_key_share_storage() {
+        // Two distinct types opt into the same key — registering both
+        // should hit the "already registered" assertion path, proving the
+        // custom key takes precedence over the ObjectIdentifier-derived one.
+        let container = Container()
+
+        container.register(CustomKeyedA.self, options: .container + .open) { _ in
+            CustomKeyedA(id: 1)
+        }
+
+        // Since both types share the same containerKey and the first
+        // registration is `.open`, the second one overwrites it.
+        container.register(CustomKeyedB.self, options: .container + .open) { _ in
+            CustomKeyedB(label: "second")
+        }
+
+        // The shared key now points at the second registration; resolving
+        // the first type via that key returns a value that isn't CustomKeyedA,
+        // so the typed resolve returns nil.
+        let a: CustomKeyedA? = container.optionalResolve()
+        let b: CustomKeyedB? = container.optionalResolve()
+
+        XCTAssertNil(a)
+        XCTAssertEqual(b, CustomKeyedB(label: "second"))
+    }
+}
