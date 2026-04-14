@@ -161,6 +161,28 @@ registrator.register(UserDefaults.self) {
 .implements(DefaultsStorage.self)
 ```
 
+### Custom entity key (`EntityKeyProviding`)
+
+The container derives the storage key for each registration from the type's runtime metadata (`ObjectIdentifier`). For most types this is unique and stable.
+
+There is one Swift-level exception: **parameterized existentials** (`any P<X>`). For such types `String(reflecting:)` returns the literal string `"<<< invalid type >>>"`, and `_mangledTypeName` can return `nil` when the generic parameter crosses a module boundary. DIKit itself now relies on `ObjectIdentifier` instead, which works for the common cases — but if you hit a crash like this:
+
+```
+DIKit/Container.swift:?: Fatal error: <<< invalid type >>> is already registered with <<< invalid type >>>
+```
+
+two distinct registrations have collapsed onto the same key. Conform the type to `EntityKeyProviding` to pin an explicit key:
+
+```swift
+import DIKit
+
+extension FeatureFlagManaging: EntityKeyProviding {
+    public static var entityKey: String { "FeatureFlagManaging<FeatureFlag>" }
+}
+```
+
+The same key is used for both registration and resolution, so every call site for that type sees the same storage bucket. Two unrelated types may deliberately share the same `entityKey` to alias one onto the other.
+
 ### Arguments
 You can pass arguments to the registration block
 
