@@ -10,14 +10,20 @@ public final class Lazy<Wrapped>: InstanceWrapper {
     @AtomicValue
     private var factory: (() -> Wrapped)!
 
+    private var innerValue: Wrapped?
     public private(set) lazy var wrappedValue: Wrapped = {
         let factory = $factory.syncUnchecked { factory in
-            defer {
-                factory = nil
+            if let innerValue {
+                return innerValue
             }
-            return factory
+
+            let value = factory!()
+            innerValue = value
+            factory = nil
+
+            return value
         }
-        return factory!()
+        return factory
     }()
 
     @available(*, deprecated, renamed: "wrappedValue")

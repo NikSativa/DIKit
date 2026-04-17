@@ -43,6 +43,7 @@ public extension Resolver {
     /// If the registration is not found then throw a fatal error with a message.
     func resolveWrapped<W: InstanceWrapper, T>(_ type: T.Type = T.self, named: String? = nil, with arguments: Arguments? = nil) -> W
     where W.Wrapped == T {
+        // swiftformat:disable:next redundantInit
         return W.init {
             return self.resolve(type, named: named, with: arguments)
         }

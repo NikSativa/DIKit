@@ -1,6 +1,6 @@
 import Foundation
 
-final class Instance {
+final class Instance: Sendable {
     let id: Int
 
     init(id: Int) {

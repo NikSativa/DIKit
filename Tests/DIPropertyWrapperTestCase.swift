@@ -11,6 +11,7 @@ protocol DIPropertyWrapperView: View {
 
 @MainActor
 @available(iOS 16.0, tvOS 16.0, watchOS 9.0, *)
+// swiftformat:disable:next preferFinalClasses
 class DIPropertyWrapperTestCase<AppView: DIPropertyWrapperView>: XCTestCase {
     private var resolvingCounter: Int = 0
     private var resolvedArgs: [Bool] = []
