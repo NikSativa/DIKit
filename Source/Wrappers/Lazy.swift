@@ -36,6 +36,4 @@ public final class Lazy<Wrapped>: InstanceWrapper {
     }
 }
 
-#if swift(>=6.0)
 extension Lazy: @unchecked Sendable {}
-#endif

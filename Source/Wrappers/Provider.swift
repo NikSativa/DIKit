@@ -26,6 +26,4 @@ public final class Provider<Wrapped>: InstanceWrapper {
     }
 }
 
-#if swift(>=6.0)
 extension Provider: @unchecked Sendable {}
-#endif

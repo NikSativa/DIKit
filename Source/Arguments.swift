@@ -60,11 +60,7 @@ public struct Arguments {
     }
 }
 
-#if swift(>=6.0)
-
 extension Arguments: @unchecked Sendable {}
-
-// MARK: - Sequence
 
 extension Arguments: Sequence {
     public func makeIterator() -> some IteratorProtocol {
@@ -91,7 +87,6 @@ private final class ArgumentsIterator: IteratorProtocol {
         return args[idx]
     }
 }
-#endif
 
 // MARK: - ExpressibleByArrayLiteral
 

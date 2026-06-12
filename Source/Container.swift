@@ -66,7 +66,6 @@ public final class Container {
 
 // MARK: - Registrator
 
-#if swift(>=6.0)
 extension Container: IsolatedMainRegistrator {
     public func register<T>(type: T.Type, options: Options, entity: @escaping @MainActor (any Resolver, Arguments) -> T) -> any Forwarding {
         return register(type: type, options: options) { resolver, args in
@@ -78,14 +77,11 @@ extension Container: IsolatedMainRegistrator {
         }
     }
 }
-#endif
 
 extension Container: Registrator {
-    #if swift(>=6.0)
     public var isolatedMain: IsolatedMainRegistrator {
         return self
     }
-    #endif
 
     @discardableResult
     public func register<T>(type: T.Type, options: Options, entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
@@ -257,6 +253,4 @@ private func typeKey(_ type: Any) -> String {
     return String(describing: type).normalized
 }
 
-#if swift(>=6.0)
 extension Container: @unchecked Sendable {}
-#endif

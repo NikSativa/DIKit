@@ -1,4 +1,3 @@
-#if swift(>=6.0)
 import Foundation
 import Threading
 
@@ -97,4 +96,3 @@ public extension IsolatedMainRegistrator {
         return registration(forType: type, name: name)
     }
 }
-#endif

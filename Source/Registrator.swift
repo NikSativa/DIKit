@@ -7,10 +7,8 @@ import Foundation
 ///
 /// - Warning: Registration order matters — dependencies must be registered before they can be resolved.
 public protocol Registrator {
-    #if swift(>=6.0)
     // swiftformat:disable:next all
     var isolatedMain: IsolatedMainRegistrator { get }
-    #endif
 
     /// Register a dependency in the container. The entity is created lazily using the provided factory closure.
     ///
