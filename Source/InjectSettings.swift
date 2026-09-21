@@ -5,7 +5,7 @@ public enum InjectSettings {
     /// Make sure that you have called `container.makeShared()` before using it and sure that it called only once.
     public internal(set) nonisolated(unsafe) static var container: Container? {
         didSet {
-            assert(oldValue == nil, "Container is already registered")
+            assert(oldValue == nil || container == nil, "Container is already registered")
         }
     }
 
