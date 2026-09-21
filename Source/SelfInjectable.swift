@@ -44,8 +44,8 @@ extension NSObject {
                 objc_setAssociatedObject(self, &key, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             }
 
-            if let container = InjectSettings.container {
-                resolveDependnciesIfNeeded(with: container)
+            if let resolver = InjectSettings.resolver {
+                resolveDependnciesIfNeeded(with: resolver)
             }
         }
     }
