@@ -13,11 +13,17 @@ protocol DIPropertyWrapperView: View {
 @available(iOS 16.0, tvOS 16.0, watchOS 9.0, *)
 // swiftformat:disable:next preferFinalClasses
 class DIPropertyWrapperTestCase<AppView: DIPropertyWrapperView>: XCTestCase {
+    enum SecondDraw {
+        case newRenderer
+        case sameRenderer
+    }
+
     private var resolvingCounter: Int = 0
     private var resolvedArgs: [Bool] = []
     private let container: Container = .init(assemblies: [])
 
     func run_test(options: Options,
+                  secondDraw: SecondDraw = .newRenderer,
                   resolvingCounterByStep expectedResolvingCounter: [Int],
                   argsShouldBeDeallocatedAfterFirstResolve argsShouldBeDeallocated: Bool,
                   file: StaticString = #filePath,
@@ -32,13 +38,19 @@ class DIPropertyWrapperTestCase<AppView: DIPropertyWrapperView>: XCTestCase {
         #endif
         XCTAssertNotNil(instanceWeak, "initializing args", file: file, line: line)
 
-        var appView: (some View)? = makeAppView(instanceHolder)
+        var appView = Optional(makeAppView(instanceHolder))
         instanceHolder = nil
         XCTAssertEqual(resolvingCounter, 0, "initializing view", file: file, line: line)
         XCTAssertNotNil(instanceWeak, "args should be alive", file: file, line: line)
         XCTAssertTrue(resolvedArgs.isEmpty, "not yet resolved", file: file, line: line)
 
-        let capture = ImageRenderer(content: appView).actualImage
+        var sameRenderer = secondDraw == .sameRenderer ? ImageRenderer(content: appView) : nil
+        let capture =
+            if let sameRenderer {
+                sameRenderer.actualImage
+            } else {
+                ImageRenderer(content: appView).actualImage
+            }
         XCTAssertNotNil(capture, "the first draw", file: file, line: line)
         XCTAssertEqual(resolvingCounter, expectedResolvingCounter[0], "the first resolve", file: file, line: line)
         if argsShouldBeDeallocated {
@@ -48,13 +60,22 @@ class DIPropertyWrapperTestCase<AppView: DIPropertyWrapperView>: XCTestCase {
         }
         XCTAssertEqual(resolvedArgs, [true], "resolving with args (step 1)", file: file, line: line)
 
-        let capture2 = ImageRenderer(content: appView).actualImage
+        if let sameRenderer {
+            sameRenderer.content = makeAppView(instanceHolder)
+        }
+        let capture2 =
+            if let sameRenderer {
+                sameRenderer.actualImage
+            } else {
+                ImageRenderer(content: appView).actualImage
+            }
         XCTAssertNotNil(capture2, "the second draw", file: file, line: line)
         XCTAssertEqual(resolvingCounter, expectedResolvingCounter[1], "the second resolve", file: file, line: line)
         XCTAssertTrue(zip(resolvedArgs, [true, !argsShouldBeDeallocated]).allSatisfy(==), "resolving \(argsShouldBeDeallocated ? "without" : "with") args (step 2)", file: file, line: line)
 
+        sameRenderer = nil
         appView = nil
-        let appView2 = makeAppView(instanceHolder) // make new with 'nil'
+        let appView2 = makeAppView(instanceHolder)
 
         let capture3 = ImageRenderer(content: appView2).actualImage
         XCTAssertNotNil(capture3, file: file, line: line)

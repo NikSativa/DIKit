@@ -1,8 +1,10 @@
 import DIKit
+import DIKitTesting
 import Testing
 
 private final class InstanceConsumer {
-    @Inject var instance: Instance
+    @Inject
+    var instance: Instance
 }
 
 private actor ScopeGauge {
@@ -36,7 +38,8 @@ struct InjectSettingsTests {
         }
     }
 
-    @Test func concurrentScopesDoNotLeakIntoEachOther() async throws {
+    @Test
+    func concurrentScopesDoNotLeakIntoEachOther() async throws {
         let gauge = ScopeGauge()
         try await withThrowingTaskGroup(of: (Int, Int).self) { group in
             for id in 0..<50 {
@@ -57,7 +60,8 @@ struct InjectSettingsTests {
         #expect(await gauge.peak > 1)
     }
 
-    @Test func synchronousScopeResolvesFromItsResolver() {
+    @Test
+    func synchronousScopeResolvesFromItsResolver() {
         let id = InjectSettings.withResolver(makeContainer(id: 7)) {
             return InstanceConsumer().instance.id
         }
@@ -65,7 +69,8 @@ struct InjectSettingsTests {
     }
 
     #if compiler(>=6.2) && os(macOS)
-    @Test func sharedContainerIsUsedOutsideTheScope() async {
+    @Test
+    func sharedContainerIsUsedOutsideTheScope() async {
         await #expect(processExitsWith: .success) {
             let shared = makeContainer(id: 1)
             shared.makeShared()
@@ -79,7 +84,8 @@ struct InjectSettingsTests {
         }
     }
 
-    @Test func razingTheSharedContainerDoesNotTrap() async {
+    @Test
+    func razingTheSharedContainerDoesNotTrap() async {
         await #expect(processExitsWith: .success) {
             let container = Container(assemblies: [])
             container.makeShared()

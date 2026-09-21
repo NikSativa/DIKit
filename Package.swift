@@ -13,7 +13,8 @@ let package = Package(
         .watchOS(.v9)
     ],
     products: [
-        .library(name: "DIKit", targets: ["DIKit"])
+        .library(name: "DIKit", targets: ["DIKit"]),
+        .library(name: "DIKitTesting", targets: ["DIKitTesting"])
     ],
     dependencies: [
         .package(url: "https://github.com/NikSativa/SpryKit.git", from: "3.2.4"),
@@ -28,9 +29,15 @@ let package = Package(
                 resources: [
                     .process("PrivacyInfo.xcprivacy")
                 ]),
+        .target(name: "DIKitTesting",
+                dependencies: [
+                    "DIKit"
+                ],
+                path: "DIKitTesting"),
         .testTarget(name: "DIKitTests",
                     dependencies: [
                         "DIKit",
+                        "DIKitTesting",
                         "SpryKit",
                     ],
                     path: "Tests")

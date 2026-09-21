@@ -1,5 +1,6 @@
 #if compiler(>=6.1)
 import DIKit
+import DIKitTesting
 import Testing
 
 private final class ResolutionCounter: @unchecked Sendable {
@@ -12,7 +13,8 @@ private final class ResolutionCounter: @unchecked Sendable {
 }
 
 private final class CounterConsumer {
-    @Inject var counter: ResolutionCounter
+    @Inject
+    var counter: ResolutionCounter
 }
 
 private func makeCountingContainer() -> Container {
@@ -31,7 +33,8 @@ struct ResolverScopeTests {
         #expect(CounterConsumer().counter.increment() == 1)
     }
 
-    @Test func injectResolvesFromTheTraitResolver() {
+    @Test
+    func injectResolvesFromTheTraitResolver() {
         #expect(InjectSettings.resolver != nil)
         #expect(CounterConsumer().counter.increment() == 1)
     }

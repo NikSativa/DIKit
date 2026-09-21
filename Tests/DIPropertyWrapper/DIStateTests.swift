@@ -8,18 +8,21 @@ import SwiftUI
 final class DIStateTests: DIPropertyWrapperTestCase<DIStateView> {
     func test_when_registered_transient() throws {
         run_test(options: .transient,
+                 secondDraw: .sameRenderer,
                  resolvingCounterByStep: [1, 1, 2],
                  argsShouldBeDeallocatedAfterFirstResolve: true)
     }
 
     func test_when_registered_weak() throws {
         run_test(options: .weak,
+                 secondDraw: .sameRenderer,
                  resolvingCounterByStep: [1, 1, 2],
                  argsShouldBeDeallocatedAfterFirstResolve: true)
     }
 
     func test_when_registered_container() throws {
         run_test(options: .container,
+                 secondDraw: .sameRenderer,
                  resolvingCounterByStep: [1, 1, 1],
                  argsShouldBeDeallocatedAfterFirstResolve: true)
     }

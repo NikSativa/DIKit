@@ -1,4 +1,5 @@
 #if canImport(Testing) && compiler(>=6.1)
+import DIKit
 import Testing
 
 /// A test trait that installs a freshly created resolver for each test it applies to.
