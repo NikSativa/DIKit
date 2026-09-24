@@ -14,6 +14,7 @@ let package = Package(
     ],
     products: [
         .library(name: "DIKit", targets: ["DIKit"]),
+        .library(name: "DIKitDynamic", type: .dynamic, targets: ["DIKit"]),
         .library(name: "DIKitTesting", targets: ["DIKitTesting"])
     ],
     dependencies: [

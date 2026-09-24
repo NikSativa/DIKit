@@ -1,11 +1,15 @@
-#if canImport(Testing) && compiler(>=6.1)
-import DIKit
+#if canImport(Testing) && compiler(>=6.1) && DEBUG
+@_spi(Testing) import DIKit
 import Testing
 
 /// A test trait that installs a freshly created resolver for each test it applies to.
 ///
 /// Every test case receives its own resolver from `makeResolver`, so stubs and recorded calls never leak
 /// between tests, including tests that run in parallel. Applied to a suite, the trait reaches every test in it.
+///
+/// Available in Debug builds only. `DIKitTesting` links DIKit statically, so the trait installs the resolver
+/// in its own copy of DIKit and does not reach code in an app that hosts the tests; see
+/// `InjectSettings.withResolver(_:operation:)` for testing such code.
 ///
 /// ```swift
 /// @Suite(.resolver { FakeResolver() })

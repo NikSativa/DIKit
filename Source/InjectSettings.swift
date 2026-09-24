@@ -19,14 +19,20 @@ public enum InjectSettings {
     /// - Warning:  override it on your own risk
     public nonisolated(unsafe) static var shouldCleanupStateObject: Bool = false
 
+    #if DEBUG
     @TaskLocal
-    package static var scopedResolver: (any Resolver)?
+    static var scopedResolver: (any Resolver)?
+    #endif
 
     /// Resolver used by the `Inject`, `InjectLazy`, `InjectProvider` and `InjectWrapped` property wrappers.
     ///
-    /// Returns the resolver a test installed for the current task through `DIKitTesting` when there is one,
-    /// otherwise the shared container. Make sure that you have called `container.makeShared()` before relying on the shared container.
+    /// In Debug builds, returns the resolver a test installed for the current task through `withResolver` when there is one.
+    /// Otherwise returns the shared container. Make sure that you have called `container.makeShared()` before relying on the shared container.
     public static var resolver: Resolver? {
+        #if DEBUG
         return scopedResolver ?? container
+        #else
+        return container
+        #endif
     }
 }

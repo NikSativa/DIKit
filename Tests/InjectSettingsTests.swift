@@ -1,5 +1,4 @@
-import DIKit
-import DIKitTesting
+@_spi(Testing) import DIKit
 import Testing
 
 private final class InstanceConsumer {

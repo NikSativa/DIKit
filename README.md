@@ -22,7 +22,22 @@ and link the `DIKit` product to every target that registers or resolves dependen
         ])
 ```
 
-There is a second product, `DIKitTesting`, for test targets only — see [Testing](#testing).
+The package has two more products: `DIKitDynamic`, described below, and `DIKitTesting`, a Swift Testing trait for test targets only — see [Testing](#testing).
+
+### Dynamic library
+
+The `DIKit` product uses automatic linkage, which usually means static: every binary that links it gets its own copy of the library, and with it its own shared container. When several binaries in one process link DIKit — an app and an embedded framework, or an app and a test bundle it hosts — a container made shared in one of them stays invisible to the others.
+
+`DIKitDynamic` is the same library built as a dynamic framework. Link it instead of `DIKit` when the shared container has to be a single instance for the whole app: the process loads one copy of DIKit, so `makeShared()` installs one container for every binary. The module is still `DIKit`, so the code keeps `import DIKit`:
+
+```swift
+.target(name: "MyApp",
+        dependencies: [
+            .product(name: "DIKitDynamic", package: "DIKit")
+        ])
+```
+
+The guarantee holds only while every binary in the process links `DIKitDynamic`. A binary that links `DIKit` gets its own copy, and so does one that links `DIKitTesting`, because it links DIKit statically — see [Tests hosted in an app](#tests-hosted-in-an-app).
 
 ## Create container
 
@@ -363,21 +378,10 @@ controller.resolveDependnciesIfNeeded(with: resolver)
 
 `@Inject`, `@InjectLazy`, `@InjectProvider` and `@InjectWrapped` resolve from the shared container, which is a single value for the whole process. Swift Testing runs tests in parallel, so replacing the shared container from one test would leak into every test running next to it. Instead, install a resolver for the duration of a test with `InjectSettings.withResolver`. The override is bound to the current task, so tests running in parallel never see each other's resolvers.
 
-`withResolver` and the `.resolver` trait below live in the separate `DIKitTesting` product. Add it to your test target only:
+`withResolver` is part of DIKit, but only in Debug builds and only as the `Testing` SPI: app code that imports DIKit normally cannot call it, and Release builds do not contain it. Import DIKit with `@_spi(Testing)` in the tests that call it, and build those tests in Debug:
 
 ```swift
-.testTarget(name: "MyAppTests",
-            dependencies: [
-                "MyApp",
-                .product(name: "DIKitTesting", package: "DIKit")
-            ])
-```
-
-The override is available only through `DIKitTesting`, so an app or an app extension that links `DIKit` alone can neither replace its dependencies nor reference the `Testing` framework.
-
-```swift
-import DIKit
-import DIKitTesting
+@_spi(Testing) import DIKit
 import Testing
 
 final class FakeAPI: API {
@@ -415,7 +419,23 @@ final class FakeAPI: API {
 }
 ```
 
+### Tests hosted in an app
+
+The override reaches only code that uses the same copy of DIKit as the test. When the code under test lives in an app that hosts the tests, link the same DIKit product into the app and the test bundle — [`DIKitDynamic`](#dynamic-library) guarantees a single copy — and leave `DIKitTesting` out of that bundle: it links DIKit statically and brings a copy of its own. Otherwise the app keeps resolving from its own container and the fakes are never called. In LLDB, `image lookup -r -s scopedResolver` shows every image that carries a copy.
+
 ### A fresh resolver for every test
+
+The `.resolver` trait lives in the separate `DIKitTesting` product, because it needs the `Testing` framework, which an app cannot link. Add the product to your test target only:
+
+```swift
+.testTarget(name: "MyAppTests",
+            dependencies: [
+                "MyApp",
+                .product(name: "DIKitTesting", package: "DIKit")
+            ])
+```
+
+`DIKitTesting` carries its own copy of DIKit, so the trait reaches only code linked into the test binary, as in the tests of a Swift package. For code in a host app, see [Tests hosted in an app](#tests-hosted-in-an-app).
 
 Apply the `.resolver` trait to a suite or to a single test. Every test, and every case of a parameterized test, gets its own resolver from the closure, so fakes never leak from one test into another. Inside the test, `InjectSettings.resolver` returns that resolver, which is how the test reaches its fakes:
 
@@ -443,7 +463,7 @@ struct SomeManagerTests {
 }
 ```
 
-The `.resolver` trait requires Swift 6.1 or later.
+The `.resolver` trait requires Swift 6.1 or later and, like `withResolver`, exists only in Debug builds.
 
 ### SwiftUI
 
