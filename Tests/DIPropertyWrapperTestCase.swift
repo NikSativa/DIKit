@@ -31,7 +31,7 @@ class DIPropertyWrapperTestCase<AppView: DIPropertyWrapperView>: XCTestCase {
         setup(options)
 
         var instanceHolder: Instance? = .init(id: 11)
-        #if swift(>=6.2)
+        #if compiler(>=6.3)
         weak let instanceWeak = instanceHolder
         #else
         weak var instanceWeak = instanceHolder
