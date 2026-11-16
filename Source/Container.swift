@@ -68,7 +68,7 @@ public final class Container {
 
 extension Container: IsolatedMainRegistrator {
     public func register<T>(type: T.Type, options: Options, entity: @escaping @MainActor (any Resolver, Arguments) -> T) -> any Forwarding {
-        return register(type: type, options: options) { resolver, args in
+        return register(type: type, options: options, isolatedToMainThread: true) { resolver, args in
             let usendable = Queue.isolatedMain.sync {
                 let resolved = entity(resolver, args)
                 return USendable(resolved)
@@ -85,6 +85,13 @@ extension Container: Registrator {
 
     @discardableResult
     public func register<T>(type: T.Type, options: Options, entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
+        return register(type: type, options: options, isolatedToMainThread: false, entity: entity)
+    }
+
+    private func register<T>(type: T.Type,
+                             options: Options,
+                             isolatedToMainThread: Bool,
+                             entity: @escaping (Resolver, _ arguments: Arguments) -> T) -> Forwarding {
         return $storages.syncUnchecked { storages in
             let key = key(type, name: options.name)
 
@@ -111,8 +118,9 @@ extension Container: Registrator {
                 storage = WeakStorage(accessLevel: accessLevel, generator: entity)
             }
 
-            storages[key] = storage
-            return Forwarder(container: self, storage: storage)
+            let registeredStorage: Storage = isolatedToMainThread ? MainThreadStorage(storage: storage) : storage
+            storages[key] = registeredStorage
+            return Forwarder(container: self, storage: registeredStorage)
         }
     }
 

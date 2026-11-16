@@ -146,6 +146,10 @@ final class ApplicationAssembly: Assembly {
 
 Use `registrator.isolatedMain` for entities that have to be created on the main actor, such as `UIApplication.shared`.
 
+DIKit resolves an `isolatedMain` entity on the main thread. A background thread that resolves it waits for the main thread.
+
+If an entity depends on an `isolatedMain` entity, register it with `registrator.isolatedMain` too. Otherwise a background thread can keep the storage of that entity locked while it waits for the main thread. If the main thread resolves the same entity at that time, both threads wait for each other. The same applies to a shared `Lazy`, `WeakLazy` or `Provider` whose factory resolves an `isolatedMain` entity.
+
 ## How to resolve dependencies
 
 At any place where you have access to container you can resolve dependencies like this:
