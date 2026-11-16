@@ -374,7 +374,7 @@ An `NSObject` can resolve its own dependencies by conforming to `SelfInjectable`
 final class ProfileViewController: UIViewController, @MainActor SelfInjectable {
     private var api: API!
 
-    func resolveDependncies(with resolver: Resolver) {
+    func resolveDependencies(with resolver: Resolver) {
         api = resolver.resolve()
     }
 }
@@ -385,8 +385,10 @@ final class ProfileViewController: UIViewController, @MainActor SelfInjectable {
 The factory above does it for the view controllers it creates. Anywhere else, ask for it explicitly — dependencies are resolved on the first call and later calls do nothing:
 
 ```swift
-controller.resolveDependnciesIfNeeded(with: resolver)
+controller.resolveDependenciesIfNeeded(with: resolver)
 ```
+
+The old names `resolveDependncies(with:)` and `resolveDependnciesIfNeeded(with:)` still work, but they are deprecated.
 
 ## Testing
 

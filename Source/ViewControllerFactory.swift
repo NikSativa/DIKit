@@ -54,7 +54,7 @@ extension ViewControllerFactoryImpl: ViewControllerFactory {
         let storyboard = UIStoryboard(name: klass, bundle: bundle)
 
         let controller: T = instantiateInitialViewController(from: storyboard)
-        controller.resolveDependnciesIfNeeded(with: resolver)
+        controller.resolveDependenciesIfNeeded(with: resolver)
         return controller
     }
 

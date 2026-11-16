@@ -1,8 +1,25 @@
 #if os(iOS) && canImport(UIKit)
 import Foundation
 
+/// An object that resolves its own dependencies.
 public protocol SelfInjectable {
+    /// Resolves the dependencies of the object with the specified resolver.
+    func resolveDependencies(with resolver: Resolver)
+
+    @available(*, deprecated, renamed: "resolveDependencies(with:)")
     func resolveDependncies(with resolver: Resolver)
+}
+
+public extension SelfInjectable {
+    @available(*, deprecated, message: "Implement resolveDependencies(with:)")
+    func resolveDependencies(with resolver: Resolver) {
+        resolveDependncies(with: resolver)
+    }
+
+    @available(*, deprecated, renamed: "resolveDependencies(with:)")
+    func resolveDependncies(with resolver: Resolver) {
+        assertionFailure("\(Self.self) does not implement resolveDependencies(with:)")
+    }
 }
 
 #if canImport(ObjectiveC)
@@ -17,35 +34,23 @@ extension NSObject {
     @objc
     private var isInitializedFromDI: Bool {
         get {
-            return withUnsafePointer(to: AssociatedKeys.initialization) { key in
-                var key = key
-                return (objc_getAssociatedObject(self, &key) as? Bool) ?? false
-            }
+            return (objc_getAssociatedObject(self, AssociatedKeys.initialization.utf8Start) as? Bool) ?? false
         }
         set {
-            withUnsafePointer(to: AssociatedKeys.initialization) { key in
-                var key = key
-                objc_setAssociatedObject(self, &key, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            }
+            objc_setAssociatedObject(self, AssociatedKeys.initialization.utf8Start, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 
     @objc
     private(set) var dipTag: String? {
         get {
-            return withUnsafePointer(to: AssociatedKeys.dipTag) { key in
-                var key = key
-                return objc_getAssociatedObject(self, &key) as? String
-            }
+            return objc_getAssociatedObject(self, AssociatedKeys.dipTag.utf8Start) as? String
         }
         set {
-            withUnsafePointer(to: AssociatedKeys.dipTag) { key in
-                var key = key
-                objc_setAssociatedObject(self, &key, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            }
+            objc_setAssociatedObject(self, AssociatedKeys.dipTag.utf8Start, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
 
             if let resolver = InjectSettings.resolver {
-                resolveDependnciesIfNeeded(with: resolver)
+                resolveDependenciesIfNeeded(with: resolver)
             }
         }
     }
@@ -57,19 +62,31 @@ extension NSObject {
         return !isInitializedFromDI
     }
 
-    public func resolveDependnciesIfNeeded(with resolver: Resolver) {
+    /// Resolves the dependencies of a `SelfInjectable` object one time. Later calls do nothing.
+    public func resolveDependenciesIfNeeded(with resolver: Resolver) {
         if isDependenciesInitializationNeeded(),
            let selfInjectable = self as? SelfInjectable {
-            selfInjectable.resolveDependncies(with: resolver)
+            selfInjectable.resolveDependencies(with: resolver)
         }
+    }
+
+    @available(*, deprecated, renamed: "resolveDependenciesIfNeeded(with:)")
+    public func resolveDependnciesIfNeeded(with resolver: Resolver) {
+        resolveDependenciesIfNeeded(with: resolver)
     }
 }
 #else
 public extension NSObjectProtocol {
-    func resolveDependnciesIfNeeded(with resolver: Resolver) {
+    /// Resolves the dependencies of a `SelfInjectable` object.
+    func resolveDependenciesIfNeeded(with resolver: Resolver) {
         if let selfInjectable = self as? SelfInjectable {
-            selfInjectable.resolveDependncies(with: resolver)
+            selfInjectable.resolveDependencies(with: resolver)
         }
+    }
+
+    @available(*, deprecated, renamed: "resolveDependenciesIfNeeded(with:)")
+    func resolveDependnciesIfNeeded(with resolver: Resolver) {
+        resolveDependenciesIfNeeded(with: resolver)
     }
 }
 #endif
