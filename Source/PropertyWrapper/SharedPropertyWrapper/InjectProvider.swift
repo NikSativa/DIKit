@@ -7,13 +7,8 @@ import Foundation
 /// - Note: It's useful when you are using shared container. See `Container.makeShared()` for more information.
 @propertyWrapper
 public struct InjectProvider<Value> {
-    public private(set) var wrappedValue: Value {
-        get {
-            return projectedValue.wrappedValue
-        }
-        set {
-            assertionFailure("<Inject> setter is unavailable")
-        }
+    public var wrappedValue: Value {
+        return projectedValue.wrappedValue
     }
 
     public let projectedValue: Provider<Value>

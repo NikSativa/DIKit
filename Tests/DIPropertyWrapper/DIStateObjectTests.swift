@@ -30,9 +30,12 @@ struct DIStateObjectView: DIPropertyWrapperView {
     var instance: ObservableInstance
 
     init(args: Instance?) {
-        self._instance = .init(with: args.map { [$0] }, shouldCleanup: true)
+        self._instance = .init(with: args.map {
+            [$0]
+        }, shouldCleanup: true)
     }
 
+    @ViewBuilder
     var body: some View {
         Text("Instance: \(instance.id)")
     }

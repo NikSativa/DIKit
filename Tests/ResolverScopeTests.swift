@@ -25,7 +25,9 @@ private func makeCountingContainer() -> Container {
     return container
 }
 
-@Suite(.resolver { makeCountingContainer() })
+@Suite(.resolver {
+    makeCountingContainer()
+})
 struct ResolverScopeTests {
     @Test(arguments: 0..<20)
     func eachTestCaseGetsAFreshResolver(index: Int) async throws {

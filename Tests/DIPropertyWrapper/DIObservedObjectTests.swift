@@ -29,9 +29,12 @@ struct DIObservedObjectView: DIPropertyWrapperView {
     var instance: ObservableInstance
 
     init(args: Instance?) {
-        self._instance = .init(with: args.map { [$0] })
+        self._instance = .init(with: args.map {
+            [$0]
+        })
     }
 
+    @ViewBuilder
     var body: some View {
         Text("Instance: \(instance.id)")
     }

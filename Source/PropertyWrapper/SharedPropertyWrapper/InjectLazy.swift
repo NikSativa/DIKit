@@ -3,17 +3,12 @@ import Foundation
 /// `InjectLazy` is a property wrapper for the factory that creates an instance of the specified type and store it - that means every time you access the instance property,
 /// it will request instance from the container ONCE it was accessed and then return existing one stored inside wrapper.
 ///
-/// - Important: It resolves instance from the shared container on ONCE it was accessed _(not on initialisation)_.
+/// - Important: It resolves instance from the shared container on ONCE it was accessed _(not on initialization)_.
 /// - Note: It's useful when you are using shared container. See `Container.makeShared()` for more information.
 @propertyWrapper
 public struct InjectLazy<Value> {
-    public private(set) var wrappedValue: Value {
-        get {
-            return projectedValue.wrappedValue
-        }
-        set {
-            assertionFailure("<Inject> setter is unavailable")
-        }
+    public var wrappedValue: Value {
+        return projectedValue.wrappedValue
     }
 
     public let projectedValue: Lazy<Value>

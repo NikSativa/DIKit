@@ -173,7 +173,12 @@ private extension String {
     }
 
     var normalized: String {
-        return components(separatedBy: ".").filter { $0 != "Type" && $0 != "Protocol" }.joined(separator: ".").unwrapped
+        return components(separatedBy: ".")
+            .filter {
+                $0 != "Type" && $0 != "Protocol"
+            }
+            .joined(separator: ".")
+            .unwrapped
     }
 }
 
@@ -212,13 +217,17 @@ private extension Assembly {
 @inline(__always)
 private func key(_ type: some Any, name: String?) -> String {
     let key = typeKey(type)
-    return name.map { key + "_" + $0 } ?? key
+    return name.map {
+        key + "_" + $0
+    } ?? key
 }
 
 @inline(__always)
 private func key(_ obj: Any, name: String?) -> String {
     let key = typeKey(type(of: obj))
-    return name.map { key + "_" + $0 } ?? key
+    return name.map {
+        key + "_" + $0
+    } ?? key
 }
 
 /// Produces a unique, stable string key for a metatype.

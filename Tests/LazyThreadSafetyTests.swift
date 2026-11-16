@@ -19,7 +19,9 @@ final class LazyThreadSafetyTests: XCTestCase {
 
         XCTAssertEqual(counter.value, 1)
         let snapshot = resolved.snapshot()
-        let first = snapshot.first.flatMap { $0 }
+        let first = snapshot.first.flatMap {
+            $0
+        }
         XCTAssertNotNil(first)
         for instance in snapshot {
             XCTAssertTrue(instance === first)
@@ -96,7 +98,9 @@ final class LazyThreadSafetyTests: XCTestCase {
         wait(for: [allowFactoryToFinish, secondaryDone], timeout: 2.0)
         let collected = secondaryValues.snapshot()
         XCTAssertEqual(collected.count, 16)
-        XCTAssertTrue(collected.allSatisfy { $0.id == 7 })
+        XCTAssertTrue(collected.allSatisfy {
+            $0.id == 7
+        })
     }
 }
 
