@@ -43,18 +43,20 @@ public struct DIObservedObject<Value: ObservableObject>: DynamicProperty {
 }
 
 private final class InstanceHolder<Value: ObservableObject>: ObservableObject {
-    private var observers: Set<AnyCancellable> = []
+    private var instanceObserver: AnyCancellable?
 
     var instance: Value! {
+        willSet {
+            if instance != nil, newValue !== instance {
+                objectWillChange.send()
+            }
+        }
         didSet {
             if oldValue !== instance {
-                assert(observers.isEmpty, "Subscribed to `objectWillChange` multiple times. Should never happen.")
-                observers = []
-                instance.objectWillChange
+                instanceObserver = instance?.objectWillChange
                     .sink { [unowned self] _ in
                         objectWillChange.send()
                     }
-                    .store(in: &observers)
             }
         }
     }
