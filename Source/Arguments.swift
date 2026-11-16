@@ -26,12 +26,15 @@ public struct Arguments {
 
     /// Resolves an element of the specified type at the specified index.
     public func resolve<T>(_ type: T.Type = T.self, at index: Int = 0) -> T {
-        return optionalResolve(type, at: index).unsafelyUnwrapped
+        guard let value = optionalResolve(type, at: index) else {
+            fatalError("Arguments has no <\(type)> at index \(index)")
+        }
+        return value
     }
 
     /// Resolves an element of the specified type at the specified index by subscript.
     public subscript<T>(index: Int) -> T {
-        return optionalResolve(T.self, at: index).unsafelyUnwrapped
+        return resolve(T.self, at: index)
     }
 
     /// Finds the first element of the specified type or returns nil.
@@ -45,8 +48,11 @@ public struct Arguments {
     }
 
     /// Finds the first element of the specified type.
-    public func first<T>(_: T.Type = T.self) -> T {
-        return optionalFirst().unsafelyUnwrapped
+    public func first<T>(_ type: T.Type = T.self) -> T {
+        guard let value = optionalFirst(type) else {
+            fatalError("Arguments has no <\(type)>")
+        }
+        return value
     }
 
     /// Number of elements in the container.
