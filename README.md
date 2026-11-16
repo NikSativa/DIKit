@@ -291,6 +291,8 @@ registrator.registration(for: BuildMode.self)
     .implements(ApiBuildMode.self)
 ```
 
+To guarantee this order, put the assembly that owns the registration in `dependencies`. The container assembles each dependency before the assembly that lists it.
+
 ### Custom entity key (`EntityKeyProviding`)
 
 The container stores every registration under a string key. By default that key is the fully qualified type name read from the type's runtime metadata through `String(reflecting:)`, which is unique and stable for the types Swift can describe.

@@ -6,7 +6,8 @@ public protocol Assembly {
     /// - Warning:  override it on your own risk
     var id: String { get }
 
-    /// List of assemblies that this assembly depends on
+    /// List of assemblies that this assembly depends on.
+    /// The container assembles each dependency before this assembly.
     var dependencies: [Assembly] { get }
 
     /// Assembles dependencies for the specified registrator

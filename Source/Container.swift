@@ -220,7 +220,7 @@ private extension [Assembly] {
 
 private extension Assembly {
     var allDependencies: [Assembly] {
-        return [self] + dependencies + dependencies.flatMap(\.allDependencies)
+        return dependencies.flatMap(\.allDependencies) + [self]
     }
 }
 
