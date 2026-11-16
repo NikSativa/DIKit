@@ -17,7 +17,9 @@ public extension Resolver {
         if let value = optionalResolve(type: type, named: named, with: arguments ?? .init()) {
             return value
         }
-        fatalError("can't resolve dependency of <\(type)>")
+        fatalError("can't resolve dependency of <\(type)>" + (named.map {
+            " named <\($0)>"
+        } ?? ""))
     }
 
     /// Resolve a dependency in the container.

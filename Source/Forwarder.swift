@@ -49,7 +49,7 @@ internal protocol ForwardRegistrator: AnyObject {
 }
 
 internal struct Forwarder: Forwarding {
-    private unowned let container: ForwardRegistrator
+    private weak var container: ForwardRegistrator?
     private let storage: Storage
 
     init(container: ForwardRegistrator,
@@ -60,6 +60,11 @@ internal struct Forwarder: Forwarding {
 
     @discardableResult
     func implements<T>(type: T.Type, named: String?, accessLevel: Options.AccessLevel?) -> Self {
+        guard let container else {
+            assertionFailure("can't forward <\(type)> because the container is deallocated")
+            return self
+        }
+
         container.register(type, named: named, storage: ForwardingStorage(storage: storage, accessLevel: accessLevel))
         return self
     }

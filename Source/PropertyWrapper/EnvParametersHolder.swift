@@ -1,4 +1,3 @@
-#if canImport(SwiftUI)
 import Foundation
 
 internal final class EnvParametersHolder {
@@ -19,4 +18,3 @@ internal final class EnvParametersHolder {
         }
     }
 }
-#endif

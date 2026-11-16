@@ -121,7 +121,9 @@ extension Container: Registrator {
             let key = key(type, name: name)
 
             guard let storage = storages[key] else {
-                fatalError("can't resolve dependency of <\(type)>")
+                fatalError("can't find registration of <\(type)>" + (name.map {
+                    " named <\($0)>"
+                } ?? ""))
             }
 
             return Forwarder(container: self, storage: storage)
@@ -217,14 +219,6 @@ private extension Assembly {
 @inline(__always)
 private func key(_ type: some Any, name: String?) -> String {
     let key = typeKey(type)
-    return name.map {
-        key + "_" + $0
-    } ?? key
-}
-
-@inline(__always)
-private func key(_ obj: Any, name: String?) -> String {
-    let key = typeKey(type(of: obj))
     return name.map {
         key + "_" + $0
     } ?? key

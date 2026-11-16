@@ -25,7 +25,7 @@ public extension ViewControllerFactory {
     func createNavigationController<T, N>(_: T.Type = T.self,
                                           navigation: N.Type = UINavigationController.self,
                                           from nibName: String? = nil,
-                                          bundle: Bundle = .main) -> (navigation: N, root: T)
+                                          bundle: Bundle? = nil) -> (navigation: N, root: T)
     where T: UIViewController, N: UINavigationController {
         return createNavigationController(from: nibName, bundle: bundle)
     }
@@ -40,8 +40,7 @@ final class ViewControllerFactoryImpl {
 
     @MainActor
     private func instantiateInitialViewController<T: UIViewController>(from storyboard: UIStoryboard) -> T {
-        if #available(iOS 13.0, *),
-           let controller = storyboard.instantiateInitialViewController(creator: { T(coder: $0) }) {
+        if let controller = storyboard.instantiateInitialViewController(creator: { T(coder: $0) }) {
             return controller
         }
         return storyboard.instantiateInitialViewController() as! T

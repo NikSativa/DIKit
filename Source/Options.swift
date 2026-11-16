@@ -11,7 +11,7 @@ public struct Options: Equatable {
         /// Dependency is open and can be overridden in the future.
         case open
 
-        /// Forwarding access level. It is used as the default access level for the forwarding mechanism..
+        /// Forwarding access level. It is used as the default access level for the forwarding mechanism.
         public static let forwarding: AccessLevel = .final
         /// Default access level. It is used as the default access level for any dependency.
         public static let `default`: AccessLevel = .final
@@ -38,19 +38,19 @@ public struct Options: Equatable {
     /// - entityKind: default (aka weak)
     public static let `default`: Options = .init(accessLevel: .default, entityKind: .default)
 
-    /// `container` options for the dependency. It is used as a singleton in the container.
+    /// `container` options for the dependency. The container creates the dependency one time and keeps it while the container exists.
     /// - accessLevel: default (aka final)
-    /// - entityKind: default (aka container)
+    /// - entityKind: container
     public static let container: Options = .init(accessLevel: .default, entityKind: .container)
 
-    /// `weak` options for the dependency. It is used as a singleton in the container.
+    /// `weak` options for the dependency. The container keeps a weak reference to the dependency and shares it while it is alive.
     /// - accessLevel: default (aka final)
-    /// - entityKind: default (aka weak)
+    /// - entityKind: weak
     public static let weak: Options = .init(accessLevel: .default, entityKind: .weak)
 
-    /// `transient` options for the dependency. It is used as a singleton in the container.
+    /// `transient` options for the dependency. The container creates a new dependency each time it is resolved.
     /// - accessLevel: default (aka final)
-    /// - entityKind: default (aka transient)
+    /// - entityKind: transient
     public static let transient: Options = .init(accessLevel: .default, entityKind: .transient)
 
     /// Name for the dependency. It is used to resolve the dependency by the name.
@@ -101,8 +101,8 @@ public struct Options: Equatable {
     }
 }
 
-// Changes the entity kind in the options.
-
+/// Changes the entity kind in the options.
+///
 /// - Example
 /// ```swift
 /// registrator.register(Service.self, options: .named("guest") + .weak) { resolver in
