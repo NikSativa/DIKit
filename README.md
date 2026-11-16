@@ -83,7 +83,7 @@ struct ContentView: View {
 
 ## Shared container
 
-If you want to use the container in the property wrappers (`Inject`, `InjectLazy`, `InjectProvider`, `InjectWrapped`) you can create a shared container like this:
+If you want to use the container in the property wrappers (`Inject`, `InjectLazy`, `InjectProvider`, `InjectWeakLazy`, `InjectWrapped`) you can create a shared container like this:
 
 ```swift
 let container = Container(assemblies: [...])
@@ -158,14 +158,16 @@ or if container is shared you can use:
 @Inject var analytics: Analytics
 @InjectLazy var api: API
 @InjectProvider var dataBase: DataBase
+@InjectWeakLazy var session: (any Session)?
 @InjectWrapped var theme: Lazy<Theme>
 ```
 - `@Inject` resolves once, when the object that owns it is created
 - `@InjectLazy` resolves on first access
 - `@InjectProvider` asks the container on every access
-- `@InjectWrapped` injects the `Lazy` or `Provider` wrapper itself
+- `@InjectWeakLazy` resolves on first access and keeps only a weak reference to the instance
+- `@InjectWrapped` injects the `Lazy`, `Provider` or `WeakLazy` wrapper itself
 
-All four take the resolver from the shared container when the owning object is created, even the ones that resolve later.
+All five take the resolver from the shared container when the owning object is created, even the ones that resolve later.
 
 or, in SwiftUI:
 ```swift
@@ -185,13 +187,25 @@ let theme: Lazy<Theme> = container.resolveWrapped()
 let dataBase: Provider<DataBase> = container.resolveWrapped()
 ```
 
-Both conform to `InstanceWrapper`, which requires nothing but `init(with factory: @escaping () -> Wrapped)`. Your own type conforming to it can be resolved by `resolveWrapped` and injected by `@InjectWrapped` the same way.
+`WeakLazy` resolves the instance on the first access to `wrappedValue`, like `Lazy`, but keeps only a weak reference to it. Use it to break a cyclic dependency without a retain cycle. After the instance is deallocated, `wrappedValue` returns `nil`, and `WeakLazy` does not ask the container again. The type must be an `Optional` of a class instance, so the property is optional:
+
+```swift
+final class Tracker {
+    @InjectWeakLazy var session: (any Session)?
+}
+
+let session: WeakLazy<(any Session)?> = container.resolveWrapped()
+```
+
+If the container returns a value type, `WeakLazy` stops the app with a fatal error.
+
+`Lazy`, `Provider` and `WeakLazy` conform to `InstanceWrapper`, which requires nothing but `init(with factory: @escaping () -> Wrapped)`. Your own type conforming to it can be resolved by `resolveWrapped` and injected by `@InjectWrapped` the same way.
 
 The SwiftUI wrappers have projected values too: `@DIState`, `@DIObservedObject` and `@DIStateObject` project a `Binding` to the resolved instance, and `@DIProvider` projects a `DIProviderOptions` carrying the name and the arguments it resolves with.
 
 ### Releasing resolve parameters
 
-`@InjectLazy` and the SwiftUI wrappers take a `shouldCleanup` flag. When it is `true`, the wrapper forgets the name and the arguments it was created with right after the first resolve, so it does not keep the arguments alive; a later resolve — for example when SwiftUI recreates the view — then happens without them.
+`@InjectLazy`, `@InjectWeakLazy` and the SwiftUI wrappers take a `shouldCleanup` flag. When it is `true`, the wrapper forgets the name and the arguments it was created with right after the first resolve, so it does not keep the arguments alive; a later resolve — for example when SwiftUI recreates the view — then happens without them.
 
 ```swift
 @InjectLazy(with: ["Bob"], shouldCleanup: true) var manager: UserManager
@@ -376,7 +390,7 @@ controller.resolveDependnciesIfNeeded(with: resolver)
 
 ## Testing
 
-`@Inject`, `@InjectLazy`, `@InjectProvider` and `@InjectWrapped` resolve from the shared container, which is a single value for the whole process. Swift Testing runs tests in parallel, so replacing the shared container from one test would leak into every test running next to it. Instead, install a resolver for the duration of a test with `InjectSettings.withResolver`. The override is bound to the current task, so tests running in parallel never see each other's resolvers.
+`@Inject`, `@InjectLazy`, `@InjectProvider`, `@InjectWeakLazy` and `@InjectWrapped` resolve from the shared container, which is a single value for the whole process. Swift Testing runs tests in parallel, so replacing the shared container from one test would leak into every test running next to it. Instead, install a resolver for the duration of a test with `InjectSettings.withResolver`. The override is bound to the current task, so tests running in parallel never see each other's resolvers.
 
 `withResolver` is part of DIKit, but only in Debug builds and only as the `Testing` SPI: app code that imports DIKit normally cannot call it, and Release builds do not contain it. Import DIKit with `@_spi(Testing)` in the tests that call it, and build those tests in Debug:
 
@@ -476,6 +490,6 @@ ContentView()
 
 ### Things to keep in mind
 
-- Property wrappers capture the resolver when the object that owns them is created, even `@InjectLazy` and `@InjectProvider`, which resolve later. Create the object under test inside `withResolver`, or inside a test that uses the `.resolver` trait — an object created outside keeps the resolver it was created with.
+- Property wrappers capture the resolver when the object that owns them is created, even `@InjectLazy`, `@InjectProvider` and `@InjectWeakLazy`, which resolve later. Create the object under test inside `withResolver`, or inside a test that uses the `.resolver` trait — an object created outside keeps the resolver it was created with.
 - The override follows the current task and its child tasks. Work dispatched through GCD or `Task.detached` does not see it and falls back to the shared container.
 - Do not call `makeShared()` from tests: the shared container is process-wide, so parallel tests would share it.

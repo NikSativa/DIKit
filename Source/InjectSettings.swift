@@ -24,7 +24,7 @@ public enum InjectSettings {
     static var scopedResolver: (any Resolver)?
     #endif
 
-    /// Resolver used by the `Inject`, `InjectLazy`, `InjectProvider` and `InjectWrapped` property wrappers.
+    /// Resolver used by the `Inject`, `InjectLazy`, `InjectProvider`, `InjectWeakLazy` and `InjectWrapped` property wrappers.
     ///
     /// In Debug builds, returns the resolver a test installed for the current task through `withResolver` when there is one.
     /// Otherwise returns the shared container. Make sure that you have called `container.makeShared()` before relying on the shared container.
