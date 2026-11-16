@@ -4,15 +4,15 @@ import SwiftUI
 
 /// A property wrapper type that can resolve instance of specified type by DI container which is stored in the SwiftUI environment.
 ///
-/// It resolves specified instance on the first access and stores it inside the wrapper via `@State` property wrapper.
+/// It resolves the instance on the first access and keeps it for the lifetime of the view, as `@State` does.
 ///
-/// - Important: It storing instance inside the wrapper by `@State` property wrapper and handles lifecycle of the instance by SwiftUI mechanisms.
+/// - Important: SwiftUI handles the lifecycle of the instance. A write through the projected `Binding` redraws the view.
 @MainActor
 @propertyWrapper
 public struct DIState<Value>: DynamicProperty {
     @EnvironmentObject
     private var container: ObservableResolver
-    @State
+    @StateObject
     private var holder: InstanceHolder<Value> = .init()
     private let parametersHolder: EnvParametersHolder
 
@@ -44,8 +44,8 @@ public struct DIState<Value>: DynamicProperty {
 
 private final class InstanceHolder<Value>: ObservableObject {
     var instance: Value! {
-        didSet {
-            if oldValue != nil {
+        willSet {
+            if instance != nil {
                 objectWillChange.send()
             }
         }
