@@ -11,8 +11,9 @@ public final class Lazy<Wrapped>: InstanceWrapper {
     private var factory: (() -> Wrapped)!
 
     private var innerValue: Wrapped?
-    public private(set) lazy var wrappedValue: Wrapped = {
-        let factory = $factory.syncUnchecked { factory in
+
+    public var wrappedValue: Wrapped {
+        return $factory.syncUnchecked { factory in
             if let innerValue {
                 return innerValue
             }
@@ -23,8 +24,7 @@ public final class Lazy<Wrapped>: InstanceWrapper {
 
             return value
         }
-        return factory
-    }()
+    }
 
     @available(*, deprecated, renamed: "wrappedValue")
     public var instance: Wrapped {
