@@ -38,7 +38,7 @@ public struct Options: Equatable {
     /// - entityKind: default (aka weak)
     public static let `default`: Options = .init(accessLevel: .default, entityKind: .default)
 
-    /// `container` options for the dependency. The container creates the dependency one time and keeps it while the container exists.
+    /// `container` options for the dependency. The container keeps one instance of the dependency while the container exists.
     /// - accessLevel: default (aka final)
     /// - entityKind: container
     public static let container: Options = .init(accessLevel: .default, entityKind: .container)

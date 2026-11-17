@@ -13,9 +13,19 @@ final class MainThreadStorage: Storage {
     }
 
     func resolve(with resolver: Resolver, arguments: Arguments) -> Entity {
-        let usendable = Queue.isolatedMain.sync {
-            let resolved = storage.resolve(with: resolver, arguments: arguments)
-            return USendable(resolved)
+        if let entity = storage.cachedEntity() {
+            return entity
+        }
+
+        if Thread.isMainThread {
+            return storage.resolve(with: resolver, arguments: arguments)
+        }
+
+        let usendable = HeldLocks.current.released {
+            return Queue.isolatedMain.sync {
+                let resolved = storage.resolve(with: resolver, arguments: arguments)
+                return USendable(resolved)
+            }
         }
         return usendable.value
     }

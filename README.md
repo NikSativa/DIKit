@@ -133,7 +133,7 @@ final class ApplicationAssembly: Assembly {
             return NotificationCenter.default
         }
 
-        registrator.isolatedMain.register(UIApplication.self, options: .transient) {
+        registrator.isolatedMain.register(UIApplication.self, options: .container) {
             return UIApplication.shared
         }
 
@@ -146,9 +146,15 @@ final class ApplicationAssembly: Assembly {
 
 Use `registrator.isolatedMain` for entities that have to be created on the main actor, such as `UIApplication.shared`.
 
-DIKit resolves an `isolatedMain` entity on the main thread. A background thread that resolves it waits for the main thread.
+DIKit resolves an `isolatedMain` entity on the main thread. A background thread that resolves it waits for the main thread. During this wait, the background thread releases every DIKit lock that it holds. After the main thread answers, the background thread takes the locks again.
 
-If an entity depends on an `isolatedMain` entity, register it with `registrator.isolatedMain` too. Otherwise a background thread can keep the storage of that entity locked while it waits for the main thread. If the main thread resolves the same entity at that time, both threads wait for each other. The same applies to a shared `Lazy`, `WeakLazy` or `Provider` whose factory resolves an `isolatedMain` entity.
+The main thread can resolve an entity that a background thread creates during such a wait. The main thread then runs the factory itself. It does not wait for the background thread to finish the creation. The factory gets the arguments of the first call. Both threads get the instance that the container stores first, and the container discards the other instance. The same occurs when the background thread waits for another creation that waits for the main thread. Other background threads wait for the first creation and do not run the factory again.
+
+The same applies to `Lazy` and `WeakLazy`. A `Provider` factory can run on the main thread while a background call of the same factory waits for the main thread.
+
+To prevent the second factory call, register an entity such as `UIApplication.shared` with the `.container` option. After the main thread creates it, a background thread gets it without a wait.
+
+A factory must not wait for the main thread itself, for example with `DispatchQueue.main.sync`. DIKit cannot release its locks during such a wait. Resolve an `isolatedMain` entity instead.
 
 ## How to resolve dependencies
 

@@ -1,9 +1,9 @@
 import Foundation
-import Threading
 
 final class WeakStorage: Storage {
-    private let lock = AnyLock.default
+    private let creationLock = CreationLock()
     private weak var entity: AnyObject?
+    private var creationArguments: Arguments?
     private let generator: Generator
     let accessLevel: Options.AccessLevel
 
@@ -14,17 +14,25 @@ final class WeakStorage: Storage {
     }
 
     func resolve(with resolver: Resolver, arguments: Arguments) -> Entity {
-        lock.lock()
-        defer {
-            lock.unlock()
-        }
+        return creationLock.resolve(cached: {
+            return entity
+        }, create: {
+            let usedArguments = creationArguments ?? arguments
+            creationArguments = usedArguments
+            return generator(resolver, usedArguments)
+        }, store: { created in
+            creationArguments = nil
+            if let entity {
+                return entity
+            }
+            entity = created as AnyObject
+            return created
+        })
+    }
 
-        if let entity {
+    func cachedEntity() -> Entity? {
+        return creationLock.cachedValue {
             return entity
         }
-
-        let entity = generator(resolver, arguments)
-        self.entity = entity as AnyObject
-        return entity
     }
 }

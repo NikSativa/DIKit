@@ -6,4 +6,11 @@ protocol Storage {
 
     var accessLevel: Options.AccessLevel { get }
     func resolve(with resolver: Resolver, arguments: Arguments) -> Entity
+    func cachedEntity() -> Entity?
+}
+
+extension Storage {
+    func cachedEntity() -> Entity? {
+        return nil
+    }
 }
